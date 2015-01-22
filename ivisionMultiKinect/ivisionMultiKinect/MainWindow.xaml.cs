@@ -23,6 +23,7 @@ namespace ivisionMultiKinect
         public MainWindow()
         {
             InitializeComponent();
+            Console.WriteLine("Teste mudanca");
         }
     }
 }
