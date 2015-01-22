@@ -24,6 +24,7 @@ namespace ivisionMultiKinect
         {
             InitializeComponent();
             Console.WriteLine("Teste mudanca");
+            //yan
         }
     }
 }
