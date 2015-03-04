@@ -3,6 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <TextBox x:Name="x" HorizontalAlignment="Left" Height="24" Margin="147,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27" Text="x"/>
+        <TextBox x:Name="y" HorizontalAlignment="Left" Height="24" Margin="179,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27" Text="y"/>
+        <TextBox x:Name="z" HorizontalAlignment="Left" Height="24" Margin="211,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27" Text="z"/>
+        <TextBox x:Name="t1" HorizontalAlignment="Left" Height="24" Margin="270,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <TextBox x:Name="t2" HorizontalAlignment="Left" Height="24" Margin="302,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <TextBox x:Name="t3" HorizontalAlignment="Left" Height="24" Margin="334,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <TextBlock x:Name="xl" HorizontalAlignment="Left" Height="24" Margin="147,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <Label Content="x, y, z" HorizontalAlignment="Left" Height="25" Margin="146,48,0,0" VerticalAlignment="Top" Width="91"/>
+        <Label Content="Translation &#xD;&#xA;Distances" HorizontalAlignment="Left" Height="43" Margin="270,30,0,0" VerticalAlignment="Top" Width="91"/>
+        <Label Content="x', y', z'&#xD;&#xA;" HorizontalAlignment="Left" Height="28" Margin="146,115,0,0" VerticalAlignment="Top" Width="92"/>
+        <TextBlock x:Name="yl" HorizontalAlignment="Left" Height="24" Margin="179,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <TextBlock x:Name="zl" HorizontalAlignment="Left" Height="24" Margin="211,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <Button x:Name="translate" Content="Translate" HorizontalAlignment="Left" Margin="302,190,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <TextBox x:Name="r1" HorizontalAlignment="Left" Height="24" Margin="270,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <TextBox x:Name="r2" HorizontalAlignment="Left" Height="24" Margin="302,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <TextBox x:Name="r3" HorizontalAlignment="Left" Height="24" Margin="334,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="27"/>
+        <Label Content="Rotation &#xD;&#xA;Parameters" HorizontalAlignment="Left" Height="43" Margin="270,102,0,0" VerticalAlignment="Top" Width="91"/>
+
     </Grid>
 </Window>

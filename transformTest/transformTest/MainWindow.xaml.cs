@@ -22,7 +22,36 @@ namespace transformTest
     {
         public MainWindow()
         {
-            
+            //
+
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+         
+                translate();
+           
+        }
+
+        private void translate()
+        {
+            double[] inJoint, translateVector;
+            Transformer transformer = new Transformer();
+            try { 
+                inJoint = new double[3] { Double.Parse(x.Text), Double.Parse(y.Text), Double.Parse(z.Text) };
+                translateVector = new double[3] { Double.Parse(t1.Text), Double.Parse(t2.Text), Double.Parse(t3.Text) };
+                transformer.translatePoint(inJoint, ref translateVector);
+                xl.Text = translateVector[0].ToString();
+                yl.Text = translateVector[1].ToString();
+                zl.Text = translateVector[2].ToString();
+            } catch (Exception) {
+                MessageBox.Show("Insira coordenadas nas entradas.");
+            }
+        }
+
+        
+
+        
     }
-}
+    }
+
