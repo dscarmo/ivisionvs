@@ -7,7 +7,7 @@
         <Image x:Name="Image1" HorizontalAlignment="Left" Height="400" Margin="965,10,0,0" VerticalAlignment="Top" Width="400"/>
         <Image x:Name="Image2" HorizontalAlignment="Left" Height="400" Margin="10,459,0,0" VerticalAlignment="Top" Width="400"/>
         <Image x:Name="Image3" HorizontalAlignment="Left" Height="400" Margin="965,459,0,0" VerticalAlignment="Top" Width="400"/>
-        <TextBlock Name="Status" HorizontalAlignment="Left" Height="849" Margin="1365,10,0,0" TextWrapping="Wrap" Text="Kinect Status" VerticalAlignment="Top" Width="217"/>
+        <TextBlock Name="Status" HorizontalAlignment="Left" Height="849" Margin="1365,10,0,0" TextWrapping="Wrap" Text="Message Log" VerticalAlignment="Top" Width="217"/>
         <Image x:Name="Ske0" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,10,0,0" Opacity="0.5"/>
         <Image x:Name="Ske1" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="965,10,0,0" Opacity="0.5"/>
         <Image x:Name="Ske2" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,459,0,0" Opacity="0.5"/>
@@ -26,6 +26,20 @@
         <Label Content="Kinect 3" HorizontalAlignment="Left" Margin="420,522,0,0" VerticalAlignment="Top"/>
         <Label Content="Kinect 2&#xD;&#xA;" HorizontalAlignment="Left" Margin="913,90,0,0" VerticalAlignment="Top"/>
         <Label Content="Kinect 4&#xD;&#xA;" HorizontalAlignment="Left" Margin="913,522,0,0" VerticalAlignment="Top"/>
+        <Button Content="Apply" HorizontalAlignment="Left" VerticalAlignment="Top" Width="46" Margin="535,268,0,0" Click="applyAngle"/>
+        <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="420,177,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="a0" HorizontalAlignment="Left" Margin="516,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="29"/>
+        <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="756,180,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="a1" HorizontalAlignment="Left" Margin="852,187,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="29"/>
+        <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="420,632,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="a2" HorizontalAlignment="Left" Margin="516,639,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="29"/>
+        <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="756,632,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="a3" HorizontalAlignment="Left" Margin="852,639,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="29"/>
+        <Label Content="Angle Control" HorizontalAlignment="Left" Margin="420,229,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="kinectChooser" HorizontalAlignment="Left" Height="23" Margin="459,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32"/>
+        <TextBox x:Name="angle" HorizontalAlignment="Left" Height="23" Margin="496,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32"/>
+        <Label Content="Kinect" HorizontalAlignment="Left" Margin="459,255,0,0" VerticalAlignment="Top" FontSize="8"/>
+        <Label Content="Angle" HorizontalAlignment="Left" Margin="496,255,0,0" VerticalAlignment="Top" FontSize="8"/>
 
     </Grid>
 </Window>

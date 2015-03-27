@@ -7,7 +7,9 @@
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using System.Threading;
     using Microsoft.Kinect;
+
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -107,6 +109,9 @@
         // Hand hand0, hand1, hand2, hand3;
         int[] frameCount = new int[4] { 0, 0, 0, 0 };
         Designer designer;
+        bool updateAlive;
+        private Thread t_angleUpdate;
+
 
         public MainWindow()
         {
@@ -120,9 +125,12 @@
         /// <param name="e">event arguments</param>
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            statusUpdate();
+
             int kid = 0;
             designer = new Designer(ref sensors);
+            t_angleUpdate = new Thread(update);
+            
+
             foreach (var kinect in sensors)
             {
                 try
@@ -193,11 +201,12 @@
                         kid++;
 
 
-                        // Start the sensor!
+                        // Start the sensor and angle threads
                         try
                         {
                             if (kinect.Status == KinectStatus.Connected)
                                 kinect.Start();
+                           
                         }
                         catch (IOException)
                         {
@@ -216,6 +225,9 @@
                     Utils.msg("kinect id" + kid + "not available.");
                 }
             }
+            updateAlive = true;
+            t_angleUpdate.Start();
+           
         }
 
         /// <summary>
@@ -225,12 +237,14 @@
         /// <param name="e">event arguments</param>
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            updateAlive = false;
+            Thread.Sleep(600);
             Utils.debugMsg("Stoping Kinects...");
-            Status.Text = "Stoping Kinects...";
             foreach (var kinect in sensors)
                 if (null != kinect)
                     kinect.Stop();
             Utils.debugMsg("Done.");
+
         }
 
 
@@ -538,7 +552,7 @@
         #endregion
 
         #region AUX
-        private void statusMod(int breaks, String s, String option)
+        public void statusMod(int breaks, String s, String option)
         {
             switch (option)
             {
@@ -557,7 +571,7 @@
 
         }
 
-        private void statusUpdate()
+        public void statusUpdate()
         {
             int id = 0;
             foreach (var kinect in sensors)
@@ -575,11 +589,73 @@
                 return true;
             }
             else
+            {
                 return false;
+            }
         }
 
+        public void errorReport(Exception e)
+        {
+            MessageBox.Show(e.Message);
+        }
+
+        public void update()
+        {
+            try
+            {
+                int[] angles = new int[4] { 0, 0, 0, 0 };
+                while (updateAlive)
+                {
+                    //statusUpdate();
+                    for (int i = 0; i < 4; i++)
+                        angles[i] = sensors[i].ElevationAngle;
+                    a0.Dispatcher.Invoke(new Action<int>(a => a0.Text = a.ToString()), angles[0]);
+                    a1.Dispatcher.Invoke(new Action<int>(a => a1.Text = a.ToString()), angles[1]);
+                    a2.Dispatcher.Invoke(new Action<int>(a => a2.Text = a.ToString()), angles[2]);
+                    a3.Dispatcher.Invoke(new Action<int>(a => a3.Text = a.ToString()), angles[3]);
+
+                    Thread.Sleep(500);
+                }
+                Utils.debugMsg("Update thread terminating...");
+            }
+            catch (Exception e)
+            {
+                errorReport(e);
+            }
+
+
+        }
         #endregion
 
+        private void applyAngle(object sender, RoutedEventArgs e)
+        {
+            int kinect, ang;
+         
+            try
+            {
+                kinect = Int32.Parse(kinectChooser.Text);
+                ang = Int32.Parse(angle.Text);
+                if (ang < sensors[kinect].MaxElevationAngle && ang > sensors[kinect].MinElevationAngle)
+                    tilt(sensors[kinect], ang);
+                else
+                    MessageBox.Show("Ângulo muito pequeno ou muito grande!");
+               
+            }
+            catch(Exception error)
+            {
+                MessageBox.Show("Erro capturado: " + error.Message + ", coloque valores válidos nas caixas de texto.");
+            }
+            
+        }
+
+    
+
+        //Tilting method
+        public void tilt(KinectSensor sensor, int ang)
+        {
+            sensor.ElevationAngle = ang;
+            Thread.Sleep(100);
+        }
 
     }
 }

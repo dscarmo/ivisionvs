@@ -44,7 +44,7 @@ namespace multiKinect
         /// Brush used for drawing joints that are currently tracked
         /// </summary>
         private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-
+        private readonly Brush leftHandBrush = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
         /// <summary>
         /// Brush used for drawing joints that are currently inferred
         /// </summary>        
@@ -138,7 +138,11 @@ namespace multiKinect
 
                 if (joint.TrackingState == JointTrackingState.Tracked)
                 {
-                    drawBrush = this.trackedJointBrush;
+                    if (joint.JointType == JointType.HandLeft )
+                    {
+                        drawBrush = this.leftHandBrush;
+                    } else 
+                        drawBrush = this.trackedJointBrush;
                 }
                 else if (joint.TrackingState == JointTrackingState.Inferred)
                 {
