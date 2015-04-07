@@ -1,5 +1,7 @@
-﻿namespace multiKinect
+﻿
+namespace multiKinect
 {
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -18,7 +20,11 @@
     {
         // Collection of connected Kinect Sensors
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
-        
+        //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
+        const bool useLessKinects = true;
+        const int howManyKinects = 2;
+        //
+
         #region Color Lists
         /// <summary>
         /// Bitmap that will hold color information
@@ -129,11 +135,12 @@
             designer = new Designer(ref sensors);
             t_angleUpdate = new Thread(update);
 
-
             foreach (var kinect in sensors)
             {
+                
                 try
                 {
+                    if (useLessKinects) if (kid == howManyKinects) break;
                     if (null != kinect)
                     {
 
@@ -198,7 +205,7 @@
                                 break;
                         }
                         kid++;
-
+                        
 
                         // Start the sensor and angle threads
                         try
@@ -335,7 +342,21 @@
                             designer.DrawBonesAndJoints(skel, dc, index);
                             if (Utils.checkCount(ref frameCount, index))
                             {
-                                Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                switch (index) {
+                                    case 0:
+                                        Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        break;
+                                    case 1:
+                                        Hand1.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        break;
+                                    case 2:
+                                        Hand2.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        break;
+                                    case 3:
+                                        Hand3.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        break;
+                                    
+                                }
                             }
 
 
@@ -392,7 +413,10 @@
                 {
                     //statusUpdate();
                     for (int i = 0; i < sensors.Count; i++)
-                        angles[i] = sensors[i].ElevationAngle;
+                    {
+                        if (sensors[i].IsRunning)
+                            angles[i] = sensors[i].ElevationAngle;
+                    }
                     a0.Dispatcher.Invoke(new Action<int>(a => a0.Text = a.ToString()), angles[0]);
                     a1.Dispatcher.Invoke(new Action<int>(a => a1.Text = a.ToString()), angles[1]);
                     a2.Dispatcher.Invoke(new Action<int>(a => a2.Text = a.ToString()), angles[2]);
@@ -446,7 +470,8 @@
         {
             for (int i = 0; i < sensors.Count; i++)
             {
-                sensors[i].ElevationAngle = 0;
+                if (sensors[i].IsRunning)
+                    sensors[i].ElevationAngle = 0;
             }
         }
 
