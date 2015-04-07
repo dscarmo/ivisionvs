@@ -129,7 +129,7 @@
             int kid = 0;
             designer = new Designer(ref sensors);
             t_angleUpdate = new Thread(update);
-            
+
 
             foreach (var kinect in sensors)
             {
@@ -206,7 +206,7 @@
                         {
                             if (kinect.Status == KinectStatus.Connected)
                                 kinect.Start();
-                           
+
                         }
                         catch (IOException)
                         {
@@ -227,7 +227,7 @@
             }
             updateAlive = true;
             t_angleUpdate.Start();
-           
+
         }
 
         /// <summary>
@@ -594,20 +594,17 @@
             }
         }
 
-        public void errorReport(Exception e)
-        {
-            MessageBox.Show(e.Message);
-        }
-
+     
         public void update()
         {
             try
             {
                 int[] angles = new int[4] { 0, 0, 0, 0 };
+                int choosenKinect = 0;
                 while (updateAlive)
                 {
                     //statusUpdate();
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < sensors.Count; i++)
                         angles[i] = sensors[i].ElevationAngle;
                     a0.Dispatcher.Invoke(new Action<int>(a => a0.Text = a.ToString()), angles[0]);
                     a1.Dispatcher.Invoke(new Action<int>(a => a1.Text = a.ToString()), angles[1]);
@@ -620,7 +617,7 @@
             }
             catch (Exception e)
             {
-                errorReport(e);
+                Utils.errorReport(e);
             }
 
 
@@ -630,31 +627,125 @@
         private void applyAngle(object sender, RoutedEventArgs e)
         {
             int kinect, ang;
-         
+
             try
             {
-                kinect = Int32.Parse(kinectChooser.Text);
+                kinect = Int32.Parse(kinectChooser.Text) - 1;
                 ang = Int32.Parse(angle.Text);
                 if (ang < sensors[kinect].MaxElevationAngle && ang > sensors[kinect].MinElevationAngle)
                     tilt(sensors[kinect], ang);
                 else
                     MessageBox.Show("Ângulo muito pequeno ou muito grande!");
-               
+
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 MessageBox.Show("Erro capturado: " + error.Message + ", coloque valores válidos nas caixas de texto.");
             }
-            
+
         }
 
-    
+
 
         //Tilting method
         public void tilt(KinectSensor sensor, int ang)
         {
             sensor.ElevationAngle = ang;
             Thread.Sleep(100);
+        }
+
+        private void resetAngles(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < sensors.Count; i++)
+            {
+                sensors[i].ElevationAngle = 0;
+            }
+        }
+
+        private void changeKinectChooser(bool plus)
+        {
+            try
+            {
+                int kinect = Int32.Parse(kinectChooser.Text);
+
+                if (plus)
+                {
+
+                    if ((kinect > sensors.Count - 1) | (kinect < 1))
+                        Utils.msg("Kinect com esse numero não encontrado.");
+                    else
+                    {
+                        kinect++;
+                        kinectChooser.Text = (kinect).ToString();
+                    }
+                }
+                else
+                {
+                    if ((kinect > sensors.Count) | (kinect < 2))
+                        Utils.msg("Kinect com esse numero não encontrado.");
+                    else
+                    {
+                        kinect--;
+                        kinectChooser.Text = (kinect).ToString();
+                    }
+                }
+                if ((kinect < sensors.Count + 1) & (kinect > 0))
+                    angle.Text = sensors[kinect - 1].ElevationAngle.ToString();
+
+            }
+            catch (Exception error)
+            {
+                Utils.errorReport(error);
+            }
+        }
+
+        private void changeAngle(bool plus)
+        {
+            try
+            {
+                int angl = Int32.Parse(angle.Text);
+
+                if (plus)
+                {
+
+                    if (angl > 26)
+                        Utils.msg("Não é possível aumentar mais que 27.");
+                    else
+                        angle.Text = (angl + 2).ToString();
+                }
+                else
+                {
+                    if (angl < -26)
+                        Utils.msg("Não é possível diminuir mais que -27.");
+                    else
+                        angle.Text = (angl - 2).ToString();
+                }
+            }
+            catch (Exception error)
+            {
+                Utils.errorReport(error);
+            }
+        }
+
+        private void chooserPlus(object sender, RoutedEventArgs e)
+        {
+            changeKinectChooser(true);
+        }
+
+
+        private void chooserMinus(object sender, RoutedEventArgs e)
+        {
+            changeKinectChooser(false);
+        }
+
+        private void anglePlus(object sender, RoutedEventArgs e)
+        {
+            changeAngle(true);
+        }
+
+        private void angleMinus(object sender, RoutedEventArgs e)
+        {
+            changeAngle(false);
         }
 
     }

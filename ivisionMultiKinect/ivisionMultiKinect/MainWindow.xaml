@@ -26,7 +26,7 @@
         <Label Content="Kinect 3" HorizontalAlignment="Left" Margin="420,522,0,0" VerticalAlignment="Top"/>
         <Label Content="Kinect 2&#xD;&#xA;" HorizontalAlignment="Left" Margin="913,90,0,0" VerticalAlignment="Top"/>
         <Label Content="Kinect 4&#xD;&#xA;" HorizontalAlignment="Left" Margin="913,522,0,0" VerticalAlignment="Top"/>
-        <Button Content="Apply" HorizontalAlignment="Left" VerticalAlignment="Top" Width="46" Margin="535,268,0,0" Click="applyAngle"/>
+        <Button Content="Apply" HorizontalAlignment="Left" VerticalAlignment="Top" Width="46" Margin="531,286,0,0" Click="applyAngle"/>
         <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="420,177,0,0" VerticalAlignment="Top"/>
         <TextBlock x:Name="a0" HorizontalAlignment="Left" Margin="516,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="29"/>
         <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="756,180,0,0" VerticalAlignment="Top"/>
@@ -36,10 +36,15 @@
         <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="756,632,0,0" VerticalAlignment="Top"/>
         <TextBlock x:Name="a3" HorizontalAlignment="Left" Margin="852,639,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="29"/>
         <Label Content="Angle Control" HorizontalAlignment="Left" Margin="420,229,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="kinectChooser" HorizontalAlignment="Left" Height="23" Margin="459,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32"/>
-        <TextBox x:Name="angle" HorizontalAlignment="Left" Height="23" Margin="496,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32"/>
-        <Label Content="Kinect" HorizontalAlignment="Left" Margin="459,255,0,0" VerticalAlignment="Top" FontSize="8"/>
-        <Label Content="Angle" HorizontalAlignment="Left" Margin="496,255,0,0" VerticalAlignment="Top" FontSize="8"/>
+        <TextBox x:Name="kinectChooser" HorizontalAlignment="Left" Height="23" Margin="455,286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="1"/>
+        <TextBox x:Name="angle" HorizontalAlignment="Left" Height="23" Margin="492,286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
+        <Label Content="Kinect" HorizontalAlignment="Left" Margin="423,286,0,0" VerticalAlignment="Top" FontSize="8" RenderTransformOrigin="-0.812,1.571"/>
+        <Label Content="Angle" HorizontalAlignment="Left" Margin="492,273,0,0" VerticalAlignment="Top" FontSize="8"/>
+        <Button Content="Reset Angles" HorizontalAlignment="Left" Margin="582,285,0,0" VerticalAlignment="Top" Width="75" Click="resetAngles"/>
+        <Button Content="+" HorizontalAlignment="Left" Margin="455,261,0,0" VerticalAlignment="Top" Width="32" Click="chooserPlus"/>
+        <Button Content="-" HorizontalAlignment="Left" Margin="455,314,0,0" VerticalAlignment="Top" Width="32" Click="chooserMinus"/>
+        <Button Content="+" HorizontalAlignment="Left" Margin="492,261,0,0" VerticalAlignment="Top" Width="32" Click="anglePlus"/>
+        <Button Content="-" HorizontalAlignment="Left" Margin="492,314,0,0" VerticalAlignment="Top" Width="32" Click="angleMinus"/>
 
     </Grid>
 </Window>
