@@ -16,7 +16,7 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        //lol
         /// <Kinect Collection>
         /// Collection of connected Kinect Sensors
         /// </Kinect Collection>
