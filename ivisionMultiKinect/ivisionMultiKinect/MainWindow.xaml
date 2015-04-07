@@ -7,7 +7,6 @@
         <Image x:Name="Image1" HorizontalAlignment="Left" Height="400" Margin="965,10,0,0" VerticalAlignment="Top" Width="400"/>
         <Image x:Name="Image2" HorizontalAlignment="Left" Height="400" Margin="10,459,0,0" VerticalAlignment="Top" Width="400"/>
         <Image x:Name="Image3" HorizontalAlignment="Left" Height="400" Margin="965,459,0,0" VerticalAlignment="Top" Width="400"/>
-        <TextBlock Name="Status" HorizontalAlignment="Left" Height="849" Margin="1365,10,0,0" TextWrapping="Wrap" Text="Message Log" VerticalAlignment="Top" Width="217"/>
         <Image x:Name="Ske0" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,10,0,0" Opacity="0.5"/>
         <Image x:Name="Ske1" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="965,10,0,0" Opacity="0.5"/>
         <Image x:Name="Ske2" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,459,0,0" Opacity="0.5"/>

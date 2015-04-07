@@ -30,5 +30,52 @@ namespace multiKinect
             //MessageBox.Show(e.Message);
             AutoClosingMessageBox.Show(e.Message, "Error", 2000);
         }
+
+        public static bool checkCount(ref int[] frameCount, int id)
+        {
+            if (frameCount[id]++ == 10)
+            {
+                frameCount[id] = 0;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #region Deprecated
+        /*Deprectated
+        public void statusMod(int breaks, String s, String option)
+        {
+            switch (option)
+            {
+                case "add":
+                    for (int i = 0; i < breaks; i++)
+                        s = System.Environment.NewLine + s;
+                    Status.Text += s;
+                    break;
+                case "clear":
+                    Status.Text = "";
+                    break;
+                default:
+                    Utils.msg("Fatal error: wrong message in statusMod");
+                    break;
+            }
+
+        }
+
+        public void statusUpdate()
+        {
+            int id = 0;
+            foreach (var kinect in sensors)
+            {
+                statusMod(1, "Kinect" + id + " status: " + kinect.Status, "add");
+                id++;
+            }
+        }
+
+        */
+        #endregion
     }
 }

@@ -16,12 +16,9 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        //lol
-        /// <Kinect Collection>
-        /// Collection of connected Kinect Sensors
-        /// </Kinect Collection>
+        // Collection of connected Kinect Sensors
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
-
+        
         #region Color Lists
         /// <summary>
         /// Bitmap that will hold color information
@@ -106,13 +103,15 @@
         //private DrawingImage imageSource;
         #endregion
 
+        #region Aux Vars
         // Hand hand0, hand1, hand2, hand3;
         int[] frameCount = new int[4] { 0, 0, 0, 0 };
         Designer designer;
         bool updateAlive;
         private Thread t_angleUpdate;
+        #endregion
 
-
+        #region Initialization and Closure
         public MainWindow()
         {
             InitializeComponent();
@@ -246,7 +245,7 @@
             Utils.debugMsg("Done.");
 
         }
-
+        #endregion
 
         #region Color Events
         /// <summary>
@@ -254,9 +253,12 @@
         /// </summary>
         /// <param name="sender">object sending the event</param>
         /// <param name="e">event arguments</param>
-        private void SensorColorFrameReady0(object sender, ColorImageFrameReadyEventArgs e)
+        /// 
+
+
+        //Unique event-method
+        private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e, int index)
         {
-            int index = 0;
             using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
             {
                 if (colorFrame != null)
@@ -272,68 +274,26 @@
                         0);
                 }
             }
+        }
+
+        private void SensorColorFrameReady0(object sender, ColorImageFrameReadyEventArgs e)
+        {
+            SensorColorFrameReady(sender, e, 0);
         }
 
         private void SensorColorFrameReady1(object sender, ColorImageFrameReadyEventArgs e)
         {
-            int index = 1;
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
-            {
-                if (colorFrame != null)
-                {
-                    // Copy the pixel data from the image to a temporary array
-                    colorFrame.CopyPixelDataTo(this.colorPixels[index]);
-
-                    // Write the pixel data into our bitmap
-                    this.colorBitmap[index].WritePixels(
-                        new Int32Rect(0, 0, this.colorBitmap[index].PixelWidth, this.colorBitmap[index].PixelHeight),
-                        this.colorPixels[index],
-                        this.colorBitmap[index].PixelWidth * sizeof(int),
-                        0);
-                }
-            }
+            SensorColorFrameReady(sender, e, 1);
         }
-
 
         private void SensorColorFrameReady2(object sender, ColorImageFrameReadyEventArgs e)
         {
-            int index = 2;
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
-            {
-                if (colorFrame != null)
-                {
-                    // Copy the pixel data from the image to a temporary array
-                    colorFrame.CopyPixelDataTo(this.colorPixels[index]);
-
-                    // Write the pixel data into our bitmap
-                    this.colorBitmap[index].WritePixels(
-                        new Int32Rect(0, 0, this.colorBitmap[index].PixelWidth, this.colorBitmap[index].PixelHeight),
-                        this.colorPixels[index],
-                        this.colorBitmap[index].PixelWidth * sizeof(int),
-                        0);
-                }
-            }
+            SensorColorFrameReady(sender, e, 2);
         }
-
 
         private void SensorColorFrameReady3(object sender, ColorImageFrameReadyEventArgs e)
         {
-            int index = 3;
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
-            {
-                if (colorFrame != null)
-                {
-                    // Copy the pixel data from the image to a temporary array
-                    colorFrame.CopyPixelDataTo(this.colorPixels[index]);
-
-                    // Write the pixel data into our bitmap
-                    this.colorBitmap[index].WritePixels(
-                        new Int32Rect(0, 0, this.colorBitmap[index].PixelWidth, this.colorBitmap[index].PixelHeight),
-                        this.colorPixels[index],
-                        this.colorBitmap[index].PixelWidth * sizeof(int),
-                        0);
-                }
-            }
+            SensorColorFrameReady(sender, e, 3);
         }
         #endregion
 
@@ -343,7 +303,10 @@
         /// </summary>
         /// <param name="sender">object sending the event</param>
         /// <param name="e">event arguments</param>
-        private void SensorSkeletonFrameReady0(object sender, SkeletonFrameReadyEventArgs e)
+        /// 
+
+        //Unique Event-method
+        private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e, int index)
         {
             Skeleton[] skeletons = new Skeleton[0];
 
@@ -356,7 +319,7 @@
                 }
             }
 
-            using (DrawingContext dc = this.drawingGroup[0].Open())
+            using (DrawingContext dc = this.drawingGroup[index].Open())
             {
                 // Draw a transparent background to set the render size
                 dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
@@ -369,8 +332,8 @@
 
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            designer.DrawBonesAndJoints(skel, dc, 0);
-                            if (checkCount(ref frameCount, 0))
+                            designer.DrawBonesAndJoints(skel, dc, index);
+                            if (Utils.checkCount(ref frameCount, index))
                             {
                                 Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
                             }
@@ -382,217 +345,42 @@
                             dc.DrawEllipse(
                             this.centerPointBrush,
                             null,
-                            designer.SkeletonPointToScreen(skel.Position, 0),
+                            designer.SkeletonPointToScreen(skel.Position, index),
                             BodyCenterThickness,
                             BodyCenterThickness);
                         }
                     }
 
                     // prevent drawing outside of our render area
-                    this.drawingGroup[0].ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                    this.drawingGroup[index].ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
                 }
             }
+        }
+
+        private void SensorSkeletonFrameReady0(object sender, SkeletonFrameReadyEventArgs e)
+        {
+            SensorSkeletonFrameReady(sender, e, 0);
         }
 
 
 
         private void SensorSkeletonFrameReady1(object sender, SkeletonFrameReadyEventArgs e)
         {
-
-            Skeleton[] skeletons = new Skeleton[0];
-
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                }
-            }
-
-            using (DrawingContext dc = this.drawingGroup[1].Open())
-            {
-                // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-
-                if (skeletons.Length != 0)
-                {
-                    foreach (Skeleton skel in skeletons)
-                    {
-                        designer.RenderClippedEdges(skel, dc);
-
-                        if (skel.TrackingState == SkeletonTrackingState.Tracked)
-                        {
-                            designer.DrawBonesAndJoints(skel, dc, 1);
-                            if (checkCount(ref frameCount, 1))
-                            {
-                                Hand2.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]); //pog here to...
-                            }
-                        }
-                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
-                        {
-                            dc.DrawEllipse(
-                            this.centerPointBrush,
-                            null,
-                            designer.SkeletonPointToScreen(skel.Position, 1),
-                            BodyCenterThickness,
-                            BodyCenterThickness);
-                        }
-
-                    }
-                }
-
-                // prevent drawing outside of our render area
-                this.drawingGroup[1].ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-            }
+            SensorSkeletonFrameReady(sender, e, 1);
         }
 
         private void SensorSkeletonFrameReady2(object sender, SkeletonFrameReadyEventArgs e)
         {
-
-            Skeleton[] skeletons = new Skeleton[0];
-
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                }
-            }
-
-            using (DrawingContext dc = this.drawingGroup[2].Open())
-            {
-                // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-
-                if (skeletons.Length != 0)
-                {
-                    foreach (Skeleton skel in skeletons)
-                    {
-                        designer.RenderClippedEdges(skel, dc);
-
-                        if (skel.TrackingState == SkeletonTrackingState.Tracked)
-                        {
-                            designer.DrawBonesAndJoints(skel, dc, 2);
-                            if (checkCount(ref frameCount, 2))
-                            {
-                                Hand1.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]); //to here
-                            }
-                        }
-                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
-                        {
-                            dc.DrawEllipse(
-                            this.centerPointBrush,
-                            null,
-                            designer.SkeletonPointToScreen(skel.Position, 2),
-                            BodyCenterThickness,
-                            BodyCenterThickness);
-                        }
-
-                    }
-                }
-
-                // prevent drawing outside of our render area
-                this.drawingGroup[2].ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-            }
+            SensorSkeletonFrameReady(sender, e, 2);
         }
 
         private void SensorSkeletonFrameReady3(object sender, SkeletonFrameReadyEventArgs e)
         {
-
-            Skeleton[] skeletons = new Skeleton[0];
-
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                }
-            }
-
-            using (DrawingContext dc = this.drawingGroup[3].Open())
-            {
-                // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-
-                if (skeletons.Length != 0)
-                {
-                    foreach (Skeleton skel in skeletons)
-                    {
-                        designer.RenderClippedEdges(skel, dc);
-
-                        if (skel.TrackingState == SkeletonTrackingState.Tracked)
-                        {
-                            designer.DrawBonesAndJoints(skel, dc, 3);
-                            if (checkCount(ref frameCount, 3))
-                            {
-                                Hand3.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
-                            }
-                        }
-                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
-                        {
-                            dc.DrawEllipse(
-                            this.centerPointBrush,
-                            null,
-                            designer.SkeletonPointToScreen(skel.Position, 3),
-                            BodyCenterThickness,
-                            BodyCenterThickness);
-                        }
-
-
-                    }
-                }
-
-                // prevent drawing outside of our render area
-                this.drawingGroup[3].ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-            }
+            SensorSkeletonFrameReady(sender, e, 3);
         }
         #endregion
 
-        #region AUX
-        public void statusMod(int breaks, String s, String option)
-        {
-            switch (option)
-            {
-                case "add":
-                    for (int i = 0; i < breaks; i++)
-                        s = System.Environment.NewLine + s;
-                    Status.Text += s;
-                    break;
-                case "clear":
-                    Status.Text = "";
-                    break;
-                default:
-                    Utils.msg("Fatal error: wrong message in statusMod");
-                    break;
-            }
-
-        }
-
-        public void statusUpdate()
-        {
-            int id = 0;
-            foreach (var kinect in sensors)
-            {
-                statusMod(1, "Kinect" + id + " status: " + kinect.Status, "add");
-                id++;
-            }
-        }
-
-        public bool checkCount(ref int[] frameCount, int id)
-        {
-            if (frameCount[id]++ == 10)
-            {
-                frameCount[id] = 0;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        #region GUI_UPDATE
 
      
         public void update()
@@ -600,7 +388,6 @@
             try
             {
                 int[] angles = new int[4] { 0, 0, 0, 0 };
-                int choosenKinect = 0;
                 while (updateAlive)
                 {
                     //statusUpdate();
@@ -624,6 +411,7 @@
         }
         #endregion
 
+        #region Tilting
         private void applyAngle(object sender, RoutedEventArgs e)
         {
             int kinect, ang;
@@ -646,7 +434,7 @@
         }
 
 
-
+        
         //Tilting method
         public void tilt(KinectSensor sensor, int ang)
         {
@@ -747,6 +535,8 @@
         {
             changeAngle(false);
         }
-
+        #endregion
     }
+
+    
 }
