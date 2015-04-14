@@ -21,7 +21,7 @@ namespace multiKinect
         // Collection of connected Kinect Sensors
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
-        const bool useLessKinects = true;
+        const bool useLessKinects = false;
         const int howManyKinects = 2;
         //
 
@@ -114,6 +114,7 @@ namespace multiKinect
         int[] frameCount = new int[4] { 0, 0, 0, 0 };
         Designer designer;
         bool updateAlive;
+        int i, j, kid = 0;
         private Thread t_angleUpdate;
         #endregion
 
@@ -131,7 +132,7 @@ namespace multiKinect
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
 
-            int kid = 0;
+            
             designer = new Designer(ref sensors);
             t_angleUpdate = new Thread(update);
 
@@ -559,6 +560,72 @@ namespace multiKinect
         private void angleMinus(object sender, RoutedEventArgs e)
         {
             changeAngle(false);
+        }
+        #endregion
+
+        #region Screenshot
+        private void Capture(object sender, RoutedEventArgs e)
+        {
+            int x = int.Parse(qtd.Text);
+            int z = int.Parse(freq.Text);
+            //Thread Capturion = new Thread(new ParameterizedThreadStart(capturing));
+            try
+            {
+                int[] pass = new int[2];
+                pass[0] = int.Parse(qtd.Text);
+                pass[1] = int.Parse(freq.Text);
+                var t = new Thread(() => capturing(x, z));
+                t.Start();
+            }
+            catch
+            {
+                MessageBox.Show("Insira valores válidos na frequência e quantidade de imagens!");
+            }
+
+            //t.Start();
+            //return t;
+            //Capturion.Start(int.Parse(qtd.Text), int.Parse(freq.Text));
+        }
+
+        private void save()
+        {
+            while (j < kid)
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                // create frame from the writable bitmap and add to encoder
+                encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
+
+                string myPhotos = "C:\\Users\\Public\\Kinect Dataset";
+                //Environment.SpecialFolder.MyPictures
+                string path = System.IO.Path.Combine(myPhotos, "KinectSnapshot-" + i + j + ".png");
+
+                // write the new file to disk
+                try
+                {
+                    using (FileStream fs = new FileStream(path, FileMode.Create))
+                    {
+                        encoder.Save(fs);
+                    }
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Fail to Capture");
+                }
+                j++;
+            }
+
+        }
+
+        private void capturing(int x, int z)
+        {
+            i = 0;
+            while (i < x)
+            {
+                Thread.Sleep(z);
+                j = 0;
+                Dispatcher.Invoke(save);
+                i++;
+            }
         }
         #endregion
     }

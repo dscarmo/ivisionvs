@@ -35,7 +35,7 @@
         <Label Content="Y Angle Control:" HorizontalAlignment="Left" Margin="756,632,0,0" VerticalAlignment="Top"/>
         <TextBlock x:Name="a3" HorizontalAlignment="Left" Margin="852,639,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="29"/>
         <Label Content="Angle Control" HorizontalAlignment="Left" Margin="420,229,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="kinectChooser" HorizontalAlignment="Left" Height="23" Margin="455,286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="1"/>
+        <TextBox x:Name="freq" HorizontalAlignment="Left" Height="23" Margin="455,424,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32"/>
         <TextBox x:Name="angle" HorizontalAlignment="Left" Height="23" Margin="492,286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
         <Label Content="Kinect" HorizontalAlignment="Left" Margin="423,286,0,0" VerticalAlignment="Top" FontSize="8" RenderTransformOrigin="-0.812,1.571"/>
         <Label Content="Angle" HorizontalAlignment="Left" Margin="492,273,0,0" VerticalAlignment="Top" FontSize="8"/>
@@ -44,6 +44,12 @@
         <Button Content="-" HorizontalAlignment="Left" Margin="455,314,0,0" VerticalAlignment="Top" Width="32" Click="chooserMinus"/>
         <Button Content="+" HorizontalAlignment="Left" Margin="492,261,0,0" VerticalAlignment="Top" Width="32" Click="anglePlus"/>
         <Button Content="-" HorizontalAlignment="Left" Margin="492,314,0,0" VerticalAlignment="Top" Width="32" Click="angleMinus"/>
+        <Label Content="Dataset Creator" HorizontalAlignment="Left" Margin="423,339,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="Start" Content="Start" HorizontalAlignment="Left" Margin="455,370,0,0" VerticalAlignment="Top" Width="75" Click="Capture"/>
+        <TextBox x:Name="qtd" HorizontalAlignment="Left" Height="23" Margin="455,396,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32"/>
+        <TextBox x:Name="kinectChooser" HorizontalAlignment="Left" Height="23" Margin="455,286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="1"/>
+        <Label Content="qtd" HorizontalAlignment="Left" Margin="418,396,0,0" VerticalAlignment="Top" FontSize="8" RenderTransformOrigin="-0.812,1.571"/>
+        <Label Content="periodo" HorizontalAlignment="Left" Margin="418,426,0,0" VerticalAlignment="Top" FontSize="8" RenderTransformOrigin="-0.812,1.571"/>
 
     </Grid>
 </Window>

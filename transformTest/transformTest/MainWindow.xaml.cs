@@ -34,7 +34,7 @@ namespace transformTest
         private void translate()
         {
             double[] inJoint, translateVector, rotation, output, routput;
-            Transformer transformer = new Transformer();
+            Transformer transformer = new Transformer(  );
             try { 
                 inJoint = new double[3] { Double.Parse(x.Text), Double.Parse(y.Text), Double.Parse(z.Text) };
                 translateVector = new double[3] { Double.Parse(t1.Text), Double.Parse(t2.Text), Double.Parse(t3.Text) };
