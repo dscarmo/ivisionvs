@@ -12,7 +12,6 @@ namespace multiKinect
     using System.Threading;
     using Microsoft.Kinect;
 
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -110,12 +109,18 @@ namespace multiKinect
         #endregion
 
         #region Aux Vars
-        // Hand hand0, hand1, hand2, hand3;
         int[] frameCount = new int[4] { 0, 0, 0, 0 };
+        double[] r1, r2, r3, t1, t2, t3;
+
         Designer designer;
         bool updateAlive;
         int i, j, kid = 0;
+        Joint hand1, hand2, hand3; //To be transformed to hand0;
         private Thread t_angleUpdate;
+        Transformer transformer;
+
+
+
         #endregion
 
         #region Initialization and Closure
@@ -132,13 +137,20 @@ namespace multiKinect
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
 
-            
+
             designer = new Designer(ref sensors);
+            transformer = new Transformer();
             t_angleUpdate = new Thread(update);
+            r1 = new double[3] { 0.0, 0.0, 0.0 };
+            r2 = new double[3] { 0.0, 0.0, 0.0 };
+            r3 = new double[3] { 0.0, 0.0, 0.0 };
+            t1 = new double[3] { 0.0, 0.0, 0.0 };
+            t2 = new double[3] { 0.0, 0.0, 0.0 };
+            t3 = new double[3] { 0.0, 0.0, 0.0 };
 
             foreach (var kinect in sensors)
             {
-                
+
                 try
                 {
                     if (useLessKinects) if (kid == howManyKinects) break;
@@ -206,7 +218,7 @@ namespace multiKinect
                                 break;
                         }
                         kid++;
-                        
+
 
                         // Start the sensor and angle threads
                         try
@@ -343,20 +355,31 @@ namespace multiKinect
                             designer.DrawBonesAndJoints(skel, dc, index);
                             if (Utils.checkCount(ref frameCount, index))
                             {
-                                switch (index) {
+                                switch (index)
+                                {
                                     case 0:
                                         Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
                                         break;
                                     case 1:
-                                        Hand1.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        hand1 = skel.Joints[JointType.HandLeft];
+                                        System.Console.WriteLine(r21.Text);
+                                        //Hand1to0.Text = transformer.transformPoint(hand1, ref t1, ref r1);
+                                        Hand1to0.Text = transformPoint1(hand1);
+                                        Hand1.Text = Coordinates.stringfyPositions(hand1);
                                         break;
                                     case 2:
-                                        Hand2.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        hand2 = skel.Joints[JointType.HandLeft];
+                                        //Hand2to0.Text = transformer.transformPoint(hand2, ref t2, ref r2);
+                                        Hand2to0.Text = transformPoint2(hand2);
+                                        Hand2.Text = Coordinates.stringfyPositions(hand2);
                                         break;
                                     case 3:
-                                        Hand3.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        hand3 = skel.Joints[JointType.HandLeft];
+                                        //Hand3to0.Text = transformer.transformPoint(hand3, ref t3, ref r3);
+                                        Hand3to0.Text = transformPoint3(hand3);
+                                        Hand3.Text = Coordinates.stringfyPositions(hand3);
                                         break;
-                                    
+
                                 }
                             }
 
@@ -404,7 +427,7 @@ namespace multiKinect
 
         #region GUI_UPDATE
 
-     
+
         public void update()
         {
             try
@@ -459,7 +482,7 @@ namespace multiKinect
         }
 
 
-        
+
         //Tilting method
         public void tilt(KinectSensor sensor, int ang)
         {
@@ -628,7 +651,165 @@ namespace multiKinect
             }
         }
         #endregion
+
+
+        #region Transform
+        private void updateParameters(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                t1[0] = Double.Parse(t11.Text);
+                t1[1] = Double.Parse(t12.Text);
+                t1[2] = Double.Parse(t13.Text);
+                r1[0] = Double.Parse(r11.Text);
+                r1[1] = Double.Parse(r12.Text);
+                r1[2] = Double.Parse(r13.Text);
+
+                t2[0] = Double.Parse(t21.Text);
+                t2[1] = Double.Parse(t22.Text);
+                t2[2] = Double.Parse(t23.Text);
+                r2[0] = Double.Parse(r21.Text);
+                r2[1] = Double.Parse(r22.Text);
+                r2[2] = Double.Parse(r23.Text);
+
+                t3[0] = Double.Parse(t31.Text);
+                t3[1] = Double.Parse(t32.Text);
+                t3[2] = Double.Parse(t33.Text);
+                r3[0] = Double.Parse(r31.Text);
+                r3[1] = Double.Parse(r32.Text);
+                r3[2] = Double.Parse(r33.Text);
+            }
+            catch (Exception error)
+            {
+                Utils.errorReport(error);
+            }
+        }
+
+        public String transformPoint1(Joint inJoint)
+        {
+            //Inputs
+            double x, y, z, rx, ry, rz, tx, ty, tz;
+            //Outputs
+            double X, Y, Z;
+
+            x = inJoint.Position.X;
+            y = inJoint.Position.Y;
+            z = inJoint.Position.Z;
+
+            tx = ty = tz = rx = ry = rz = 0;
+            if ((!r11.Text.Equals(null)) && (!r12.Text.Equals(null)) && (!r13.Text.Equals(null)) && (!t11.Text.Equals(null)) && (!t12.Text.Equals(null)) && (!t13.Text.Equals(null)))
+            {
+                rx = deegresToRadians(Double.Parse(r11.Text));
+                ry = deegresToRadians(Double.Parse(r12.Text));
+                rz = deegresToRadians(Double.Parse(r13.Text));
+                tx = Double.Parse(t11.Text);
+                ty = Double.Parse(t12.Text);
+                tz = Double.Parse(t13.Text);
+            }
+
+
+            X = x * (Cos(rz) * Cos(ry)) + y * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) +
+                z * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) + tx;
+
+            Y = x * (Sin(rz) * Cos(ry)) + y * (Sin(rz) * Sin(ry) * Sin(rx) + Cos(rz) * Cos(rx)) +
+                z * (Sin(rz) * Sin(ry) * Cos(rx) - Cos(rz) * Sin(rx)) + ty;
+
+            Z = x * (-Sin(ry)) + y * (Cos(ry) * Sin(rx)) + z * (Cos(ry) * Cos(rx)) + tz;
+            //
+
+            return Coordinates.stringfyPositions(X, Y, Z);
+
+        }
+        public String transformPoint2(Joint inJoint)
+        {
+            //Inputs
+            double x, y, z, rx, ry, rz, tx, ty, tz;
+            //Outputs
+            double X, Y, Z;
+
+            x = inJoint.Position.X;
+            y = inJoint.Position.Y;
+            z = inJoint.Position.Z;
+
+            tx = ty = tz = rx = ry = rz = 0;
+            if ((!r21.Text.Equals(null)) && (!r22.Text.Equals(null)) && (!r23.Text.Equals(null)) && (!t21.Text.Equals(null)) && (!t22.Text.Equals(null)) && (!t23.Text.Equals(null)))
+            {
+                rx = deegresToRadians(Double.Parse(r21.Text));
+                ry = deegresToRadians(Double.Parse(r22.Text));
+                rz = deegresToRadians(Double.Parse(r23.Text));
+                tx = Double.Parse(t21.Text);
+                ty = Double.Parse(t22.Text);
+                tz = Double.Parse(t23.Text);
+           }
+
+
+            X = x * (Cos(rz) * Cos(ry)) + y * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) +
+                z * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) + tx;
+
+            Y = x * (Sin(rz) * Cos(ry)) + y * (Sin(rz) * Sin(ry) * Sin(rx) + Cos(rz) * Cos(rx)) +
+                z * (Sin(rz) * Sin(ry) * Cos(rx) - Cos(rz) * Sin(rx)) + ty;
+
+            Z = x * (-Sin(ry)) + y * (Cos(ry) * Sin(rx)) + z * (Cos(ry) * Cos(rx)) + tz;
+            //
+            
+            return Coordinates.stringfyPositions(X, Y, Z);
+            
+        }
+
+        
+        public String transformPoint3(Joint inJoint)
+        {
+            //Inputs
+            double x, y, z, rx, ry, rz, tx, ty, tz;
+            //Outputs
+            double X, Y, Z;
+
+            x = inJoint.Position.X;
+            y = inJoint.Position.Y;
+            z = inJoint.Position.Z;
+
+            tx = ty = tz = rx = ry = rz = 0;
+            if ((!r31.Text.Equals(null)) && (!r32.Text.Equals(null)) && (!r33.Text.Equals(null)) && (!t31.Text.Equals(null)) && (!t32.Text.Equals(null)) && (!t33.Text.Equals(null)))
+            {
+                rx = deegresToRadians(Double.Parse(r31.Text));
+                ry = deegresToRadians(Double.Parse(r32.Text));
+                rz = deegresToRadians(Double.Parse(r33.Text));
+                tx = Double.Parse(t31.Text);
+                ty = Double.Parse(t32.Text);
+                tz = Double.Parse(t33.Text);
+            }
+
+
+            X = x * (Cos(rz) * Cos(ry)) + y * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) +
+                z * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) + tx;
+
+            Y = x * (Sin(rz) * Cos(ry)) + y * (Sin(rz) * Sin(ry) * Sin(rx) + Cos(rz) * Cos(rx)) +
+                z * (Sin(rz) * Sin(ry) * Cos(rx) - Cos(rz) * Sin(rx)) + ty;
+
+            Z = x * (-Sin(ry)) + y * (Cos(ry) * Sin(rx)) + z * (Cos(ry) * Cos(rx)) + tz;
+            //
+
+            return Coordinates.stringfyPositions(X, Y, Z);
+
+        }
+        private double deegresToRadians(double deegres)
+        {
+            return deegres * (Math.PI / 180);
+        }
+
+        private double Sin(double angle)
+        {
+            return Math.Sin(angle);
+        }
+
+        private double Cos(double angle)
+        {
+            return Math.Cos(angle);
+        }
+
+
+        #endregion
     }
 
-    
+
 }
