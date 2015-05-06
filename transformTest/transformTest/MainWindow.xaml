@@ -20,6 +20,8 @@
         <TextBox x:Name="r2" HorizontalAlignment="Left" Height="24" Margin="302,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="43"/>
         <TextBox x:Name="r3" HorizontalAlignment="Left" Height="24" Margin="350,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38"/>
         <Label Content="Rotation &#xD;&#xA;Parameters" HorizontalAlignment="Left" Height="43" Margin="270,102,0,0" VerticalAlignment="Top" Width="91"/>
+        <Button Content="+&#xD;&#xA;+ Y" HorizontalAlignment="Left" Margin="257,210,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
+        <Button Content="- Y&#xD;&#xA;" HorizontalAlignment="Left" Margin="337,231,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2"/>
 
     </Grid>
 </Window>

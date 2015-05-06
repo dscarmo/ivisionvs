@@ -56,6 +56,18 @@ namespace transformTest
             //pROCRUST DISTANCE
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            r2.Text = (Int32.Parse(r2.Text) + 1).ToString();
+            translate();
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            r2.Text = (Int32.Parse(r2.Text) - 1).ToString();
+            translate();
+        }
+
         
 
         

@@ -11,6 +11,7 @@ namespace multiKinect
     using System.Windows.Media.Imaging;
     using System.Threading;
     using Microsoft.Kinect;
+using System.Windows.Media.Media3D;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -20,8 +21,8 @@ namespace multiKinect
         // Collection of connected Kinect Sensors
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
-        const bool useLessKinects = false;
-        const int howManyKinects = 2;
+        const bool useLessKinects = true;
+        const int howManyKinects = 4;
         //
 
         #region Color Lists
@@ -118,6 +119,10 @@ namespace multiKinect
         Joint hand1, hand2, hand3; //To be transformed to hand0;
         private Thread t_angleUpdate;
         Transformer transformer;
+        RotateTransform3D[] xrotation = new RotateTransform3D[3]; 
+        RotateTransform3D[] yrotation = new RotateTransform3D[3];
+        RotateTransform3D[] zrotation = new RotateTransform3D[3];
+        Point3D[] workingPoints = new Point3D[3];
 
 
 
@@ -362,7 +367,6 @@ namespace multiKinect
                                         break;
                                     case 1:
                                         hand1 = skel.Joints[JointType.HandLeft];
-                                        System.Console.WriteLine(r21.Text);
                                         //Hand1to0.Text = transformer.transformPoint(hand1, ref t1, ref r1);
                                         Hand1to0.Text = transformPoint1(hand1);
                                         Hand1.Text = Coordinates.stringfyPositions(hand1);
@@ -688,71 +692,79 @@ namespace multiKinect
         public String transformPoint1(Joint inJoint)
         {
             //Inputs
-            double x, y, z, rx, ry, rz, tx, ty, tz;
-            //Outputs
-            double X, Y, Z;
-
-            x = inJoint.Position.X;
-            y = inJoint.Position.Y;
-            z = inJoint.Position.Z;
+            double rx, ry, rz, tx, ty, tz;
+            int i = 0;
+            workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
+            
 
             tx = ty = tz = rx = ry = rz = 0;
-            if ((!r11.Text.Equals(null)) && (!r12.Text.Equals(null)) && (!r13.Text.Equals(null)) && (!t11.Text.Equals(null)) && (!t12.Text.Equals(null)) && (!t13.Text.Equals(null)))
+            try
             {
-                rx = deegresToRadians(Double.Parse(r11.Text));
-                ry = deegresToRadians(Double.Parse(r12.Text));
-                rz = deegresToRadians(Double.Parse(r13.Text));
+                rx = Double.Parse(r11.Text);
+                ry = Double.Parse(r12.Text);
+                rz = Double.Parse(r13.Text);
                 tx = Double.Parse(t11.Text);
                 ty = Double.Parse(t12.Text);
                 tz = Double.Parse(t13.Text);
             }
+            catch (Exception) { }
 
+            xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(1, 0, 0), rx));
+            yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(0, 1, 0), ry));
+            zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(0, 0, 1), rz));
 
-            X = x * (Cos(rz) * Cos(ry)) + y * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) +
-                z * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) + tx;
+            workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
+            workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
+            workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
+            workingPoints[i].X = workingPoints[i].X + tx;
+            workingPoints[i].Y = workingPoints[i].Y + ty;
+            workingPoints[i].Z = workingPoints[i].Z + tz;
+            
+            
 
-            Y = x * (Sin(rz) * Cos(ry)) + y * (Sin(rz) * Sin(ry) * Sin(rx) + Cos(rz) * Cos(rx)) +
-                z * (Sin(rz) * Sin(ry) * Cos(rx) - Cos(rz) * Sin(rx)) + ty;
-
-            Z = x * (-Sin(ry)) + y * (Cos(ry) * Sin(rx)) + z * (Cos(ry) * Cos(rx)) + tz;
-            //
-
-            return Coordinates.stringfyPositions(X, Y, Z);
+            return Coordinates.stringfyPositions(workingPoints[i]);
 
         }
         public String transformPoint2(Joint inJoint)
         {
             //Inputs
-            double x, y, z, rx, ry, rz, tx, ty, tz;
-            //Outputs
-            double X, Y, Z;
+            double rx, ry, rz, tx, ty, tz;
+            int i = 1;
+            workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
 
-            x = inJoint.Position.X;
-            y = inJoint.Position.Y;
-            z = inJoint.Position.Z;
 
             tx = ty = tz = rx = ry = rz = 0;
-            if ((!r21.Text.Equals(null)) && (!r22.Text.Equals(null)) && (!r23.Text.Equals(null)) && (!t21.Text.Equals(null)) && (!t22.Text.Equals(null)) && (!t23.Text.Equals(null)))
+            try
             {
-                rx = deegresToRadians(Double.Parse(r21.Text));
-                ry = deegresToRadians(Double.Parse(r22.Text));
-                rz = deegresToRadians(Double.Parse(r23.Text));
+                rx = Double.Parse(r21.Text);
+                ry = Double.Parse(r22.Text);
+                rz = Double.Parse(r23.Text);
                 tx = Double.Parse(t21.Text);
                 ty = Double.Parse(t22.Text);
                 tz = Double.Parse(t23.Text);
-           }
+            }
+            catch (Exception) { }
+
+            xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(1, 0, 0), rx));
+            yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(0, 1, 0), ry));
+            zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(0, 0, 1), rz));
+
+            workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
+            workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
+            workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
+            workingPoints[i].X = workingPoints[i].X + tx;
+            workingPoints[i].Y = workingPoints[i].Y + ty;
+            workingPoints[i].Z = workingPoints[i].Z + tz;
 
 
-            X = x * (Cos(rz) * Cos(ry)) + y * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) +
-                z * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) + tx;
 
-            Y = x * (Sin(rz) * Cos(ry)) + y * (Sin(rz) * Sin(ry) * Sin(rx) + Cos(rz) * Cos(rx)) +
-                z * (Sin(rz) * Sin(ry) * Cos(rx) - Cos(rz) * Sin(rx)) + ty;
-
-            Z = x * (-Sin(ry)) + y * (Cos(ry) * Sin(rx)) + z * (Cos(ry) * Cos(rx)) + tz;
-            //
-            
-            return Coordinates.stringfyPositions(X, Y, Z);
+            return Coordinates.stringfyPositions(workingPoints[i]);
             
         }
 
@@ -760,36 +772,40 @@ namespace multiKinect
         public String transformPoint3(Joint inJoint)
         {
             //Inputs
-            double x, y, z, rx, ry, rz, tx, ty, tz;
-            //Outputs
-            double X, Y, Z;
+            double rx, ry, rz, tx, ty, tz;
+            int i = 2;
+            workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
 
-            x = inJoint.Position.X;
-            y = inJoint.Position.Y;
-            z = inJoint.Position.Z;
 
             tx = ty = tz = rx = ry = rz = 0;
-            if ((!r31.Text.Equals(null)) && (!r32.Text.Equals(null)) && (!r33.Text.Equals(null)) && (!t31.Text.Equals(null)) && (!t32.Text.Equals(null)) && (!t33.Text.Equals(null)))
+            try
             {
-                rx = deegresToRadians(Double.Parse(r31.Text));
-                ry = deegresToRadians(Double.Parse(r32.Text));
-                rz = deegresToRadians(Double.Parse(r33.Text));
+                rx = Double.Parse(r31.Text);
+                ry = Double.Parse(r32.Text);
+                rz = Double.Parse(r33.Text);
                 tx = Double.Parse(t31.Text);
                 ty = Double.Parse(t32.Text);
                 tz = Double.Parse(t33.Text);
             }
+            catch (Exception) { }
+
+            xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(1, 0, 0), rx));
+            yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(0, 1, 0), ry));
+            zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                  new Vector3D(0, 0, 1), rz));
+
+            workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
+            workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
+            workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
+            workingPoints[i].X = workingPoints[i].X + tx;
+            workingPoints[i].Y = workingPoints[i].Y + ty;
+            workingPoints[i].Z = workingPoints[i].Z + tz;
 
 
-            X = x * (Cos(rz) * Cos(ry)) + y * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) +
-                z * (Cos(rz) * Sin(ry) * Sin(rx) - Sin(rz) * Cos(rx)) + tx;
 
-            Y = x * (Sin(rz) * Cos(ry)) + y * (Sin(rz) * Sin(ry) * Sin(rx) + Cos(rz) * Cos(rx)) +
-                z * (Sin(rz) * Sin(ry) * Cos(rx) - Cos(rz) * Sin(rx)) + ty;
-
-            Z = x * (-Sin(ry)) + y * (Cos(ry) * Sin(rx)) + z * (Cos(ry) * Cos(rx)) + tz;
-            //
-
-            return Coordinates.stringfyPositions(X, Y, Z);
+            return Coordinates.stringfyPositions(workingPoints[i]);
 
         }
         private double deegresToRadians(double deegres)
