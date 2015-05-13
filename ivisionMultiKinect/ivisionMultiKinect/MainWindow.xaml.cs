@@ -11,7 +11,7 @@ namespace multiKinect
     using System.Windows.Media.Imaging;
     using System.Threading;
     using Microsoft.Kinect;
-using System.Windows.Media.Media3D;
+    using System.Windows.Media.Media3D;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -624,8 +624,34 @@ using System.Windows.Media.Media3D;
 
                 string myPhotos = "C:\\Users\\Public\\Kinect Dataset";
                 //Environment.SpecialFolder.MyPictures
-                string path = System.IO.Path.Combine(myPhotos, "KinectSnapshot-" + i + j + ".png");
 
+                string path = "";
+                if (j == 0)
+                {
+                    path = System.IO.Path.Combine(myPhotos, "cam0_image" + i +".png");
+                }
+                else
+                {
+                    if (j == 1)
+                    {
+                        path = System.IO.Path.Combine(myPhotos, "cam1_image" + i +".png");
+                    }
+                    else
+                    {
+                        if (j == 2)
+                        {
+                            path = System.IO.Path.Combine(myPhotos, "cam2_image" + i + ".png");
+                        }
+                        else
+                        {
+                            if (j==3)
+                            {
+                                path = System.IO.Path.Combine(myPhotos, "cam3_image" + i + ".png");
+                            }
+                        }
+                    }
+                }
+                
                 // write the new file to disk
                 try
                 {
@@ -643,6 +669,13 @@ using System.Windows.Media.Media3D;
 
         }
 
+        private void contador()
+        {
+            int cont = int.Parse(qtd.Text);
+            cont--;
+            qtd.Text = cont.ToString();
+        }
+
         private void capturing(int x, int z)
         {
             i = 0;
@@ -651,6 +684,7 @@ using System.Windows.Media.Media3D;
                 Thread.Sleep(z);
                 j = 0;
                 Dispatcher.Invoke(save);
+                Dispatcher.Invoke(contador);
                 i++;
             }
         }
