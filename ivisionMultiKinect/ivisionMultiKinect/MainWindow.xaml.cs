@@ -31,6 +31,8 @@ namespace multiKinect
         /// </summary>
         private List<WriteableBitmap> colorBitmap = new List<WriteableBitmap>();
 
+
+        private List<DepthImagePixel[]> depthPixels = new List<DepthImagePixel[]>();
         /// <summary>
         /// Intermediate storage for the color data received from the camera
         /// </summary>
