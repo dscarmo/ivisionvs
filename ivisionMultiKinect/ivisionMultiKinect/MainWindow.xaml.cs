@@ -23,7 +23,7 @@ namespace multiKinect
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
         const bool useLessKinects = true;
         const int howManyKinects = 4;
-        //
+        //Back one month
 
         #region Color Lists
         /// <summary>
