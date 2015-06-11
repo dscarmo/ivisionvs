@@ -31,14 +31,14 @@ namespace multiKinect
         /// Bitmap that will hold color information
         /// </summary>
         private List<WriteableBitmap> colorBitmap = new List<WriteableBitmap>();
-
+        private List<WriteableBitmap> depthBitmap = new List<WriteableBitmap>();
 
         private List<DepthImagePixel[]> depthPixels = new List<DepthImagePixel[]>();
         /// <summary>
         /// Intermediate storage for the color data received from the camera
         /// </summary>
         private List<byte[]> colorPixels = new List<byte[]>();
-
+        private List<byte[]> depthColorPixels = new List<byte[]>();
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -117,11 +117,10 @@ namespace multiKinect
         double[] r1, r2, r3, t1, t2, t3;
 
         Designer designer;
-        bool updateAlive;
+        bool updateAlive, rgbON;
         int i, j, kid = 0;
         Joint hand1, hand2, hand3; //To be transformed to hand0;
         private Thread t_angleUpdate;
-        Transformer transformer;
         RotateTransform3D[] xrotation = new RotateTransform3D[3]; 
         RotateTransform3D[] yrotation = new RotateTransform3D[3];
         RotateTransform3D[] zrotation = new RotateTransform3D[3];
@@ -147,7 +146,6 @@ namespace multiKinect
 
 
             designer = new Designer(ref sensors);
-            transformer = new Transformer();
             t_angleUpdate = new Thread(update);
             r1 = new double[3] { 0.0, 0.0, 0.0 };
             r2 = new double[3] { 0.0, 0.0, 0.0 };
@@ -162,20 +160,27 @@ namespace multiKinect
                 try
                 {
                     if (useLessKinects) if (kid == howManyKinects) break;
+                    rgbON = true;
                     if (null != kinect)
                     {
 
                         // Turn on the color and ske stream to receive frames
                         kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+                        kinect.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                         kinect.SkeletonStream.Enable();
 
                         //Color allocations
                         // Allocate space to put the pixels we'll receive
                         this.colorPixels.Add(new byte[kinect.ColorStream.FramePixelDataLength]);
+                        this.depthColorPixels.Add(new byte[kinect.DepthStream.FramePixelDataLength * sizeof(int)]);
 
                         // This is the bitmap we'll display on-screen
                         this.colorBitmap.Add(new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null));
+                        this.depthBitmap.Add(new WriteableBitmap(kinect.DepthStream.FrameWidth, kinect.DepthStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null));
 
+
+                        //Depth Allocation
+                        this.depthPixels.Add(new DepthImagePixel[kinect.DepthStream.FramePixelDataLength]);
 
                         //Skeleton Allocations
                         // Create the drawing group we'll use for drawing
@@ -185,41 +190,48 @@ namespace multiKinect
                         switch (kid)
                         {
                             case 0:
-                                //img
+                                //rgb
                                 this.Image0.Source = this.colorBitmap[0];
                                 this.sensors[0].ColorFrameReady += this.SensorColorFrameReady0;
                                 //ske
                                 this.sensors[0].SkeletonFrameReady += this.SensorSkeletonFrameReady0;
                                 this.skeImageSource.Add(new DrawingImage(this.drawingGroup[0]));
                                 Ske0.Source = this.skeImageSource[0];
-                                // hand0 = new Hand(0);
+                                //Depth
+                                this.sensors[0].DepthFrameReady += this.SensorDepthFrameReady0;
                                 break;
                             case 1:
+                                //rgb
                                 this.Image1.Source = this.colorBitmap[1];
                                 this.sensors[1].ColorFrameReady += this.SensorColorFrameReady1;
                                 //ske
                                 this.sensors[1].SkeletonFrameReady += this.SensorSkeletonFrameReady1;
                                 this.skeImageSource.Add(new DrawingImage(this.drawingGroup[1]));
                                 Ske1.Source = this.skeImageSource[1];
-                                // hand1 = new Hand(1);
+                                //Depth
+                                this.sensors[1].DepthFrameReady += this.SensorDepthFrameReady1;
                                 break;
                             case 2:
+                                //rgb
                                 this.Image2.Source = this.colorBitmap[2];
                                 this.sensors[2].ColorFrameReady += this.SensorColorFrameReady2;
                                 //ske
                                 this.sensors[2].SkeletonFrameReady += this.SensorSkeletonFrameReady2;
                                 this.skeImageSource.Add(new DrawingImage(this.drawingGroup[2]));
                                 Ske2.Source = this.skeImageSource[2];
-                                // hand2 = new Hand(2);
+                                //Depth
+                                this.sensors[2].DepthFrameReady += this.SensorDepthFrameReady2;
                                 break;
                             case 3:
+                                //rgb
                                 this.Image3.Source = this.colorBitmap[3];
                                 this.sensors[3].ColorFrameReady += this.SensorColorFrameReady3;
                                 //ske
                                 this.sensors[3].SkeletonFrameReady += this.SensorSkeletonFrameReady3;
                                 this.skeImageSource.Add(new DrawingImage(this.drawingGroup[3]));
                                 Ske3.Source = this.skeImageSource[3];
-                                // hand3 = new Hand(3);
+                                //Depth
+                                this.sensors[3].DepthFrameReady += this.SensorDepthFrameReady3;
                                 break;
                             default:
                                 Utils.msg("wrong number in kID");
@@ -256,6 +268,69 @@ namespace multiKinect
             t_angleUpdate.Start();
 
         }
+        
+        private void switchShowing(int kid)
+        {
+            if (rgbON)
+            {
+                switch (kid)
+                {
+                    case 0:
+                        this.Image0.Source = this.depthBitmap[0];
+                        break;
+                    case 1:
+                        this.Image1.Source = this.depthBitmap[1];
+                        break;
+                    case 2:
+                        this.Image2.Source = this.depthBitmap[2];
+                        break;
+                    case 3:
+                        this.Image3.Source = this.depthBitmap[3];
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                switch (kid)
+                {
+                    case 0: this.Image0.Source = this.colorBitmap[0];
+                        break;
+                    case 1: this.Image1.Source = this.colorBitmap[1];
+                        break;
+                    case 2: this.Image2.Source = this.colorBitmap[2];
+                        break;
+                    case 3: this.Image3.Source = this.colorBitmap[3];
+                        break;
+                    default: 
+                        break;
+                }
+            }
+        }
+
+        private void switchbt_Click(object sender, RoutedEventArgs e)
+        {
+            if (rgbON)
+            {
+                Utils.msg("switching to depth");
+                for (int i = 0; i < kid; i++)
+                {
+                    switchShowing(i);
+                } 
+                rgbON = false;
+            }
+            else
+            {
+                Utils.msg("switching to rgb");
+                for (int i = 0; i < kid; i++)
+                {
+                    switchShowing(i);
+                } 
+                
+                rgbON = true;
+            }
+        }
 
         /// <summary>
         /// Execute shutdown tasks
@@ -275,6 +350,83 @@ namespace multiKinect
         }
         #endregion
 
+        #region Depth Events
+        private void SensorDepthFrameReady(object sender, DepthImageFrameReadyEventArgs e, int index)
+        {
+            using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
+            {
+                if (depthFrame != null & !rgbON)
+                {
+                    // Copy the pixel data from the image to a temporary array
+                    depthFrame.CopyDepthImagePixelDataTo(this.depthPixels[index]);
+
+                    // Get the min and max reliable depth for the current frame
+                    int minDepth = depthFrame.MinDepth;
+                    int maxDepth = depthFrame.MaxDepth;
+
+                    // Convert the depth to RGB
+                    int colorPixelIndex = 0;
+                    for (int i = 0; i < this.depthPixels[index].Length; ++i)
+                    {
+                        // Get the depth for this pixel
+                        short depth = depthPixels[index][i].Depth;
+
+                        // To convert to a byte, we're discarding the most-significant
+                        // rather than least-significant bits.
+                        // We're preserving detail, although the intensity will "wrap."
+                        // Values outside the reliable depth range are mapped to 0 (black).
+
+                        // Note: Using conditionals in this loop could degrade performance.
+                        // Consider using a lookup table instead when writing production code.
+                        // See the KinectDepthViewer class used by the KinectExplorer sample
+                        // for a lookup table example.
+                        byte intensity = (byte)(depth >= minDepth && depth <= maxDepth ? depth : 0);
+
+                        // Write out blue byte
+                        this.depthColorPixels[index][colorPixelIndex++] = intensity;
+
+                        // Write out green byte
+                        this.depthColorPixels[index][colorPixelIndex++] = intensity;
+
+                        // Write out red byte                        
+                        this.depthColorPixels[index][colorPixelIndex++] = intensity;
+
+                        // We're outputting BGR, the last byte in the 32 bits is unused so skip it
+                        // If we were outputting BGRA, we would write alpha here.
+                        ++colorPixelIndex;
+                    }
+
+                    // Write the pixel data into our bitmap
+                    this.depthBitmap[index].WritePixels(
+                        new Int32Rect(0, 0, this.depthBitmap[index].PixelWidth, this.depthBitmap[index].PixelHeight),
+                        this.depthColorPixels[index],
+                        this.depthBitmap[index].PixelWidth * sizeof(int),
+                        0);
+                }
+            }
+        }
+
+        private void SensorDepthFrameReady0(object sender, DepthImageFrameReadyEventArgs e)
+        {
+            SensorDepthFrameReady(sender, e, 0);
+        }
+
+        private void SensorDepthFrameReady1(object sender, DepthImageFrameReadyEventArgs e)
+        {
+            SensorDepthFrameReady(sender, e, 1);
+        }
+
+        private void SensorDepthFrameReady2(object sender, DepthImageFrameReadyEventArgs e)
+        {
+            SensorDepthFrameReady(sender, e, 2);
+        }
+
+        private void SensorDepthFrameReady3(object sender, DepthImageFrameReadyEventArgs e)
+        {
+            SensorDepthFrameReady(sender, e, 3);
+        }
+        #endregion
+
         #region Color Events
         /// <summary>
         /// Event handler for Kinect sensor's ColorFrameReady event
@@ -289,7 +441,7 @@ namespace multiKinect
         {
             using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
             {
-                if (colorFrame != null)
+                if (colorFrame != null & rgbON)
                 {
                     // Copy the pixel data from the image to a temporary array
                     colorFrame.CopyPixelDataTo(this.colorPixels[index]);
@@ -370,19 +522,19 @@ namespace multiKinect
                                         break;
                                     case 1:
                                         hand1 = skel.Joints[JointType.HandLeft];
-                                        //Hand1to0.Text = transformer.transformPoint(hand1, ref t1, ref r1);
+                                        
                                         Hand1to0.Text = transformPoint1(hand1);
                                         Hand1.Text = Coordinates.stringfyPositions(hand1);
                                         break;
                                     case 2:
                                         hand2 = skel.Joints[JointType.HandLeft];
-                                        //Hand2to0.Text = transformer.transformPoint(hand2, ref t2, ref r2);
+                                        
                                         Hand2to0.Text = transformPoint2(hand2);
                                         Hand2.Text = Coordinates.stringfyPositions(hand2);
                                         break;
                                     case 3:
                                         hand3 = skel.Joints[JointType.HandLeft];
-                                        //Hand3to0.Text = transformer.transformPoint(hand3, ref t3, ref r3);
+                                        
                                         Hand3to0.Text = transformPoint3(hand3);
                                         Hand3.Text = Coordinates.stringfyPositions(hand3);
                                         break;
@@ -862,6 +1014,8 @@ namespace multiKinect
 
 
         #endregion
+
+       
     }
 
 
