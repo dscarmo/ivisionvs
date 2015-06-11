@@ -24,6 +24,7 @@ namespace multiKinect
         const bool useLessKinects = true;
         const int howManyKinects = 4;
         //Back one month
+        //Yan test
 
         #region Color Lists
         /// <summary>
