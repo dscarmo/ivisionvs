@@ -775,9 +775,15 @@ namespace multiKinect
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 // create frame from the writable bitmap and add to encoder
-                encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
-
-                string myPhotos = "C:\\Users\\Public\\Kinect Dataset";
+                if (rgbON)
+                {
+                    encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
+                }
+                else
+                {
+                    encoder.Frames.Add(BitmapFrame.Create(depthBitmap[j]));
+                }
+                string myPhotos = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
                 //Environment.SpecialFolder.MyPictures
 
                 string path = "";
