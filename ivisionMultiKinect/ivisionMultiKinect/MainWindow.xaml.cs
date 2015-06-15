@@ -22,7 +22,7 @@ namespace multiKinect
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
         const bool useLessKinects = true;
-        const int howManyKinects = 4;
+        const int howManyKinects = 1;
         //Back one month
         //Yan test
 
@@ -775,9 +775,16 @@ namespace multiKinect
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 // create frame from the writable bitmap and add to encoder
-                encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
-
-                string myPhotos = "C:\\Users\\Public\\Kinect Dataset";
+                if (rgbON)
+                {
+                    encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
+                }
+                else
+                {
+                    encoder.Frames.Add(BitmapFrame.Create(depthBitmap[j]));
+                }
+                
+                string myPhotos = "C:\\Users\\Yan\\Desktop\\dataset";
                 //Environment.SpecialFolder.MyPictures
 
                 string path = "";
