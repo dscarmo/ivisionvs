@@ -38,7 +38,6 @@ namespace multiKinect
         /// Intermediate storage for the color data received from the camera
         /// </summary>
         private List<byte[]> colorPixels = new List<byte[]>();
-        private List<byte[]> irPixels = new List<byte[]>();
         private List<byte[]> depthColorPixels = new List<byte[]>();
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
