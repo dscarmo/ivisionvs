@@ -38,6 +38,7 @@ namespace multiKinect
         /// Intermediate storage for the color data received from the camera
         /// </summary>
         private List<byte[]> colorPixels = new List<byte[]>();
+        private List<byte[]> irPixels = new List<byte[]>();
         private List<byte[]> depthColorPixels = new List<byte[]>();
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -117,7 +118,8 @@ namespace multiKinect
         double[] r1, r2, r3, t1, t2, t3;
 
         Designer designer;
-        bool updateAlive, rgbON;
+        bool updateAlive;
+        int rgbON;
         int i, j, kid = 0;
         Joint hand1, hand2, hand3; //To be transformed to hand0;
         private Thread t_angleUpdate;
@@ -144,9 +146,9 @@ namespace multiKinect
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
 
-
-            designer = new Designer(ref sensors);
             t_angleUpdate = new Thread(update);
+            designer = new Designer(ref sensors);
+            //t_angleUpdate = new Thread(update);
             r1 = new double[3] { 0.0, 0.0, 0.0 };
             r2 = new double[3] { 0.0, 0.0, 0.0 };
             r3 = new double[3] { 0.0, 0.0, 0.0 };
@@ -160,24 +162,30 @@ namespace multiKinect
                 try
                 {
                     if (useLessKinects) if (kid == howManyKinects) break;
-                    rgbON = true;
+                    rgbON = 1;
                     if (null != kinect)
                     {
 
                         // Turn on the color and ske stream to receive frames
-                        kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+
+                        kinect.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
                         kinect.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+                        
                         kinect.SkeletonStream.Enable();
 
+                        this.depthColorPixels.Add(new byte[kinect.DepthStream.FramePixelDataLength * sizeof(int)]);
+                        
                         //Color allocations
                         // Allocate space to put the pixels we'll receive
+
                         this.colorPixels.Add(new byte[kinect.ColorStream.FramePixelDataLength]);
-                        this.depthColorPixels.Add(new byte[kinect.DepthStream.FramePixelDataLength * sizeof(int)]);
 
                         // This is the bitmap we'll display on-screen
-                        this.colorBitmap.Add(new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null));
+                        //this.colorBitmap.Add(new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null));
+                        this.colorBitmap.Add(new WriteableBitmap(kinect.ColorStream.FrameWidth, kinect.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Gray16, null));
                         this.depthBitmap.Add(new WriteableBitmap(kinect.DepthStream.FrameWidth, kinect.DepthStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null));
 
+                       
 
                         //Depth Allocation
                         this.depthPixels.Add(new DepthImagePixel[kinect.DepthStream.FramePixelDataLength]);
@@ -271,7 +279,7 @@ namespace multiKinect
         
         private void switchShowing(int kid)
         {
-            if (rgbON)
+            if (rgbON == 1)
             {
                 switch (kid)
                 {
@@ -311,25 +319,26 @@ namespace multiKinect
 
         private void switchbt_Click(object sender, RoutedEventArgs e)
         {
-            if (rgbON)
+            if (rgbON == 1) //ir
             {
-                Utils.msg("switching to depth");
+                Utils.debugMsg("switching to depth");
                 for (int i = 0; i < kid; i++)
                 {
                     switchShowing(i);
                 } 
-                rgbON = false;
+                rgbON = 2;
             }
-            else
+            else if (rgbON == 2) //DEPTH
             {
-                Utils.msg("switching to rgb");
+                Utils.debugMsg("switching to ir");
                 for (int i = 0; i < kid; i++)
                 {
                     switchShowing(i);
                 } 
                 
-                rgbON = true;
+                rgbON = 1;
             }
+           
         }
 
         /// <summary>
@@ -358,7 +367,7 @@ namespace multiKinect
         {
             using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
             {
-                if (depthFrame != null & !rgbON)
+                if (depthFrame != null & rgbON == 2)
                 {
                     // Copy the pixel data from the image to a temporary array
                     depthFrame.CopyDepthImagePixelDataTo(this.depthPixels[index]);
@@ -419,20 +428,42 @@ namespace multiKinect
         {
             using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
             {
-                if (colorFrame != null & rgbON)
+                if (colorFrame != null & (rgbON == 1))
                 {
                     // Copy the pixel data from the image to a temporary array
-                    colorFrame.CopyPixelDataTo(this.colorPixels[index]);
-
-                    // Write the pixel data into our bitmap
-                    this.colorBitmap[index].WritePixels(
+                  
+                        colorFrame.CopyPixelDataTo(this.colorPixels[index]);
+                        this.colorBitmap[index].WritePixels(
                         new Int32Rect(0, 0, this.colorBitmap[index].PixelWidth, this.colorBitmap[index].PixelHeight),
                         this.colorPixels[index],
-                        this.colorBitmap[index].PixelWidth * sizeof(int),
+                        this.colorBitmap[index].PixelWidth * colorFrame.BytesPerPixel,
                         0);
+                    
+                    
                 }
             }
         }
+
+
+        //INFRARED
+       /* private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
+        {
+            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
+            {
+                if (colorFrame != null)
+                {
+                    // Copy the pixel data from the image to a temporary array
+                    colorFrame.CopyPixelDataTo(this.colorPixels);
+
+                    // Write the pixel data into our bitmap
+                    this.colorBitmap.WritePixels(
+                        new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
+                        this.colorPixels,
+                        this.colorBitmap.PixelWidth * colorFrame.BytesPerPixel,
+                        0);
+                }
+            }
+        }*/ 
 
         private void SensorColorFrameReady0(object sender, ColorImageFrameReadyEventArgs e)
         {
@@ -753,11 +784,11 @@ namespace multiKinect
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 // create frame from the writable bitmap and add to encoder
-                if (rgbON)
+                if (rgbON == 1 | rgbON == 3)
                 {
                     encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
                 }
-                else
+                else if (rgbON == 2)
                 {
                     encoder.Frames.Add(BitmapFrame.Create(depthBitmap[j]));
                 }
