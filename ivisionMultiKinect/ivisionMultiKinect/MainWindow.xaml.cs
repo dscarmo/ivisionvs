@@ -829,9 +829,10 @@ namespace multiKinect
                         encoder.Save(fs);
                     }
                 }
-                catch (IOException)
+                catch (IOException er)
                 {
-                    MessageBox.Show("Fail to Capture");
+                    MessageBox.Show("Fail to Capture \n" + er.Message);
+                    break;
                 }
                 j++;
             }
