@@ -38,7 +38,6 @@ namespace multiKinect
         /// Intermediate storage for the color data received from the camera
         /// </summary>
         private List<byte[]> colorPixels = new List<byte[]>();
-        private List<byte[]> irPixels = new List<byte[]>();
         private List<byte[]> depthColorPixels = new List<byte[]>();
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -830,9 +829,10 @@ namespace multiKinect
                         encoder.Save(fs);
                     }
                 }
-                catch (IOException)
+                catch (IOException er)
                 {
-                    MessageBox.Show("Fail to Capture");
+                    MessageBox.Show("Fail to Capture \n" + er.Message);
+                    break;
                 }
                 j++;
             }
