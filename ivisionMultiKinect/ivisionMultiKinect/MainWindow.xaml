@@ -89,6 +89,9 @@
         <Label Content="3 to 1" HorizontalAlignment="Left" Margin="1370,179,0,0" VerticalAlignment="Top" FontSize="8"/>
         <Label Content="4 to 1" HorizontalAlignment="Left" Margin="1370,275,0,0" VerticalAlignment="Top" FontSize="8"/>
         <Button x:Name="switchbt" Content="Switch" HorizontalAlignment="Left" Margin="731,255,0,0" VerticalAlignment="Top" Width="75" Click="switchbt_Click"/>
+        <TextBox x:Name="brilho" HorizontalAlignment="Left" Height="23" Margin="641,390,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="33"/>
+        <Label x:Name="brilhoname" Content="Brilho" HorizontalAlignment="Left" Margin="641,370,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="applybrilho" Content="Apply" HorizontalAlignment="Left" Margin="687,389,0,0" VerticalAlignment="Top" Width="75" Click="apply"/>
 
     </Grid>
 </Window>

@@ -423,6 +423,17 @@ namespace multiKinect
 
 
         //Unique event-method
+        byte bBrilho = 0;
+        private void apply(object sender, RoutedEventArgs e)
+        {
+            try { 
+                bBrilho = Byte.Parse(brilho.Text);
+            }
+            catch (Exception er)
+            {
+                Utils.msg(er.Message);
+            }
+        }
         private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e, int index)
         {
             using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
@@ -432,6 +443,16 @@ namespace multiKinect
                     // Copy the pixel data from the image to a temporary array
                   
                         colorFrame.CopyPixelDataTo(this.colorPixels[index]);
+                        Utils.debugMsg(colorPixels[index].GetLength(0).ToString());
+                        for (int i = 0; i < 614399; i++)
+                        {
+                            byte buffer = colorPixels[index][i];
+                            if (buffer > 255 - bBrilho)
+                                buffer = 255;
+                            else
+                                buffer += bBrilho;
+                            colorPixels[index][i] = buffer;
+                        }
                         this.colorBitmap[index].WritePixels(
                         new Int32Rect(0, 0, this.colorBitmap[index].PixelWidth, this.colorBitmap[index].PixelHeight),
                         this.colorPixels[index],
@@ -1029,6 +1050,8 @@ namespace multiKinect
 
 
         #endregion
+
+       
 
        
     }
