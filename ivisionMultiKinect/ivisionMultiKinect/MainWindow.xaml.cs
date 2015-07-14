@@ -3,6 +3,8 @@ namespace multiKinect
 {
 
     using System;
+    using System.Drawing;
+    using System.Drawing.Imaging;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
@@ -12,7 +14,7 @@ namespace multiKinect
     using System.Threading;
     using Microsoft.Kinect;
     using System.Windows.Media.Media3D;
-
+    using ivisionMultiKinect;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -22,7 +24,7 @@ namespace multiKinect
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
         const bool useLessKinects = true;
-        const int howManyKinects = 4;
+        const int howManyKinects = 3;
         //Back one month
         //Yan test
 
@@ -74,27 +76,27 @@ namespace multiKinect
         /// <summary>
         /// Brush used to draw skeleton center point
         /// </summary>
-        private readonly Brush centerPointBrush = Brushes.Blue;
+        private readonly System.Windows.Media.Brush centerPointBrush = System.Windows.Media.Brushes.Blue;
 
         /// <summary>
         /// Brush used for drawing joints that are currently tracked
         /// </summary>
-        private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+        private readonly System.Windows.Media.Brush trackedJointBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 68, 192, 68));
 
         /// <summary>
         /// Brush used for drawing joints that are currently inferred
         /// </summary>        
-        private readonly Brush inferredJointBrush = Brushes.Yellow;
+        private readonly System.Windows.Media.Brush inferredJointBrush = System.Windows.Media.Brushes.Yellow;
 
         /// <summary>
         /// Pen used for drawing bones that are currently tracked
         /// </summary>
-        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 6);
+        private readonly System.Windows.Media.Pen trackedBonePen = new System.Windows.Media.Pen(System.Windows.Media.Brushes.Green, 6);
 
         /// <summary>
         /// Pen used for drawing bones that are currently inferred
         /// </summary>        
-        private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
+        private readonly System.Windows.Media.Pen inferredBonePen = new System.Windows.Media.Pen(System.Windows.Media.Brushes.Gray, 1);
         #endregion
 
         #region Skeleton Lists
@@ -113,19 +115,34 @@ namespace multiKinect
         #endregion
 
         #region Aux Vars
+        
+        //Lag FIX
         int[] frameCount = new int[4] { 0, 0, 0, 0 };
-        double[] r1, r2, r3, t1, t2, t3;
 
+        //Skeleton
         Designer designer;
+        Skeleton2d skeleton0, skeleton1, skeleton2, skeleton3;
+
+        //Angle Thread 
         bool updateAlive;
-        int rgbON;
+        
+        //Stream
+        int streamChoosing;
+        
+        //????
         int i, j, kid = 0;
+        
         Joint hand1, hand2, hand3; //To be transformed to hand0;
         private Thread t_angleUpdate;
+        
+        //Transform things
         RotateTransform3D[] xrotation = new RotateTransform3D[3]; 
         RotateTransform3D[] yrotation = new RotateTransform3D[3];
         RotateTransform3D[] zrotation = new RotateTransform3D[3];
+        bool transformON;
         Point3D[] workingPoints = new Point3D[3];
+        //Transform Parsing Containers
+        double[] r1, r2, r3, t1, t2, t3;
 
 
 
@@ -144,7 +161,7 @@ namespace multiKinect
         /// <param name="e">event arguments</param>
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-
+            
             t_angleUpdate = new Thread(update);
             designer = new Designer(ref sensors);
             //t_angleUpdate = new Thread(update);
@@ -161,7 +178,7 @@ namespace multiKinect
                 try
                 {
                     if (useLessKinects) if (kid == howManyKinects) break;
-                    rgbON = 1;
+                    streamChoosing = 1;
                     if (null != kinect)
                     {
 
@@ -197,7 +214,7 @@ namespace multiKinect
                         switch (kid)
                         {
                             case 0:
-                                //rgb
+                                //rgb/ir
                                 this.Image0.Source = this.colorBitmap[0];
                                 this.sensors[0].ColorFrameReady += this.SensorColorFrameReady0;
                                 //ske
@@ -208,7 +225,7 @@ namespace multiKinect
                                 this.sensors[0].DepthFrameReady += this.SensorDepthFrameReady0;
                                 break;
                             case 1:
-                                //rgb
+                                //rgb/ir
                                 this.Image1.Source = this.colorBitmap[1];
                                 this.sensors[1].ColorFrameReady += this.SensorColorFrameReady1;
                                 //ske
@@ -219,7 +236,7 @@ namespace multiKinect
                                 this.sensors[1].DepthFrameReady += this.SensorDepthFrameReady1;
                                 break;
                             case 2:
-                                //rgb
+                                //rgb/ir
                                 this.Image2.Source = this.colorBitmap[2];
                                 this.sensors[2].ColorFrameReady += this.SensorColorFrameReady2;
                                 //ske
@@ -260,9 +277,9 @@ namespace multiKinect
                         }
                     }
                 }
-                catch
+                catch (Exception error)
                 {
-                    Utils.errorMsg();
+                    Utils.errorMsg(error);
                     continue;
                 }
 
@@ -278,7 +295,7 @@ namespace multiKinect
         
         private void switchShowing(int kid)
         {
-            if (rgbON == 1)
+            if (streamChoosing == 1)
             {
                 switch (kid)
                 {
@@ -318,16 +335,16 @@ namespace multiKinect
 
         private void switchbt_Click(object sender, RoutedEventArgs e)
         {
-            if (rgbON == 1) //ir
+            if (streamChoosing == 1) //ir
             {
                 Utils.debugMsg("switching to depth");
                 for (int i = 0; i < kid; i++)
                 {
                     switchShowing(i);
                 } 
-                rgbON = 2;
+                streamChoosing = 2;
             }
-            else if (rgbON == 2) //DEPTH
+            else if (streamChoosing == 2) //DEPTH
             {
                 Utils.debugMsg("switching to ir");
                 for (int i = 0; i < kid; i++)
@@ -335,7 +352,7 @@ namespace multiKinect
                     switchShowing(i);
                 } 
                 
-                rgbON = 1;
+                streamChoosing = 1;
             }
            
         }
@@ -364,27 +381,31 @@ namespace multiKinect
         private DepthColorizer colorizer = new DepthColorizer();
         private void SensorDepthFrameReady(object sender, DepthImageFrameReadyEventArgs e, int index)
         {
-            using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
+            if (streamChoosing == 2)
             {
-                if (depthFrame != null & rgbON == 2)
+                using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
                 {
-                    // Copy the pixel data from the image to a temporary array
-                    depthFrame.CopyDepthImagePixelDataTo(this.depthPixels[index]);
-                    
-                    // Get the min and max reliable depth for the current frame
-                    int minDepth = depthFrame.MinDepth;
-                    int maxDepth = depthFrame.MaxDepth;
+                    if (depthFrame != null)
+                    {
+                        
+                        // Copy the pixel data from the image to a temporary array
+                        depthFrame.CopyDepthImagePixelDataTo(this.depthPixels[index]);
 
-                    colorizer.ConvertDepthFrame(depthPixels[index], minDepth, maxDepth, 0, depthColorPixels[index]); //todo
+                        // Get the min and max reliable depth for the current frame
+                        int minDepth = depthFrame.MinDepth;
+                        int maxDepth = depthFrame.MaxDepth;
 
-                   
-                    
-                    // Write the pixel data into our bitmap
-                    this.depthBitmap[index].WritePixels(
-                        new Int32Rect(0, 0, this.depthBitmap[index].PixelWidth, this.depthBitmap[index].PixelHeight),
-                        this.depthColorPixels[index],
-                        this.depthBitmap[index].PixelWidth * sizeof(int),
-                        0);
+                        colorizer.ConvertDepthFrame(depthPixels[index], minDepth, maxDepth, 0, depthColorPixels[index]); //todo
+
+
+
+                        // Write the pixel data into our bitmap
+                        this.depthBitmap[index].WritePixels(
+                            new Int32Rect(0, 0, this.depthBitmap[index].PixelWidth, this.depthBitmap[index].PixelHeight),
+                            this.depthColorPixels[index],
+                            this.depthBitmap[index].PixelWidth * sizeof(int),
+                            0);
+                    }
                 }
             }
         }
@@ -422,68 +443,35 @@ namespace multiKinect
         /// 
 
 
-        //Unique event-method
-        byte bBrilho = 0;
-        private void apply(object sender, RoutedEventArgs e)
-        {
-            try { 
-                bBrilho = Byte.Parse(brilho.Text);
-            }
-            catch (Exception er)
-            {
-                Utils.msg(er.Message);
-            }
-        }
+        
         private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e, int index)
         {
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
+
+            if (streamChoosing == 1)
             {
-                if (colorFrame != null & (rgbON == 1))
+                using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
                 {
-                    // Copy the pixel data from the image to a temporary array
-                  
+                    if (colorFrame != null)
+                    {
+                        // Copy the pixel data from the image to a temporary array
+                        
+
                         colorFrame.CopyPixelDataTo(this.colorPixels[index]);
-                        Utils.debugMsg(colorPixels[index].GetLength(0).ToString());
-                        for (int i = 0; i < 614399; i++)
-                        {
-                            byte buffer = colorPixels[index][i];
-                            if (buffer > 255 - bBrilho)
-                                buffer = 255;
-                            else
-                                buffer += bBrilho;
-                            colorPixels[index][i] = buffer;
-                        }
+
                         this.colorBitmap[index].WritePixels(
                         new Int32Rect(0, 0, this.colorBitmap[index].PixelWidth, this.colorBitmap[index].PixelHeight),
                         this.colorPixels[index],
                         this.colorBitmap[index].PixelWidth * colorFrame.BytesPerPixel,
                         0);
-                    
-                    
+
+
+
+
+                    }
                 }
             }
         }
-
-
-        //INFRARED
-       /* private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
-        {
-            using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
-            {
-                if (colorFrame != null)
-                {
-                    // Copy the pixel data from the image to a temporary array
-                    colorFrame.CopyPixelDataTo(this.colorPixels);
-
-                    // Write the pixel data into our bitmap
-                    this.colorBitmap.WritePixels(
-                        new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                        this.colorPixels,
-                        this.colorBitmap.PixelWidth * colorFrame.BytesPerPixel,
-                        0);
-                }
-            }
-        }*/ 
+ 
 
         private void SensorColorFrameReady0(object sender, ColorImageFrameReadyEventArgs e)
         {
@@ -531,7 +519,7 @@ namespace multiKinect
             using (DrawingContext dc = this.drawingGroup[index].Open())
             {
                 // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                dc.DrawRectangle(System.Windows.Media.Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
 
                 if (skeletons.Length != 0)
                 {
@@ -541,25 +529,31 @@ namespace multiKinect
 
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
+                            
                             designer.DrawBonesAndJoints(skel, dc, index);
                             if (Utils.checkCount(ref frameCount, index))
                             {
                                 switch (index)
                                 {
                                     case 0:
-                                        Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
+                                        skeleton0 = new Skeleton2d(skel);
+                                        Hand0.Text = skeleton0.getStringPoints();
+                                        //Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
                                         break;
                                     case 1:
-                                        hand1 = skel.Joints[JointType.HandLeft];
-                                        
-                                        Hand1to0.Text = transformPoint1(hand1);
-                                        Hand1.Text = Coordinates.stringfyPositions(hand1);
+                                        // TODO TODO TODO 
+                                        skeleton1 = new Skeleton2d(skel);
+                                        Hand1.Text = skeleton1.getStringPoints();
+                                        //hand1 = skel.Joints[JointType.HandLeft];//this will be skeleton2d - OK 
+                                        //Hand1to0.Text = transformPoint1(hand1);//need a complete transform method in skeleton2d - TODO 
+                                        //Hand1.Text = Coordinates.stringfyPositions(hand1);//need a complete stringfy - OK
                                         break;
                                     case 2:
-                                        hand2 = skel.Joints[JointType.HandLeft];
-                                        
-                                        Hand2to0.Text = transformPoint2(hand2);
-                                        Hand2.Text = Coordinates.stringfyPositions(hand2);
+                                        skeleton2 = new Skeleton2d(skel);
+                                        Hand2.Text = skeleton2.getStringPoints();
+                                        //hand2 = skel.Joints[JointType.HandLeft];
+                                        //Hand2to0.Text = transformPoint2(hand2);
+                                        //Hand2.Text = Coordinates.stringfyPositions(hand2);
                                         break;
                                     case 3:
                                         hand3 = skel.Joints[JointType.HandLeft];
@@ -611,8 +605,13 @@ namespace multiKinect
         {
             SensorSkeletonFrameReady(sender, e, 3);
         }
-        #endregion
 
+        private void stringStream_Click(object sender, RoutedEventArgs e)
+        {
+            Skeleton2d.triggerStringStream();
+        }
+        #endregion
+        
         #region GUI_UPDATE
 
 
@@ -804,39 +803,39 @@ namespace multiKinect
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 // create frame from the writable bitmap and add to encoder
-                if (rgbON == 1 | rgbON == 3)
+                if (streamChoosing == 1 | streamChoosing == 3)
                 {
                     encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
                 }
-                else if (rgbON == 2)
+                else if (streamChoosing == 2)
                 {
                     encoder.Frames.Add(BitmapFrame.Create(depthBitmap[j]));
                 }
-                string myPhotos = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
+                string dataset = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
                 //Environment.SpecialFolder.MyPictures
 
                 string path = "";
                 if (j == 0)
                 {
-                    path = System.IO.Path.Combine(myPhotos, "cam0_image" + i +".png");
+                    path = System.IO.Path.Combine(dataset, "cam0_image" + i +".png");
                 }
                 else
                 {
                     if (j == 1)
                     {
-                        path = System.IO.Path.Combine(myPhotos, "cam1_image" + i +".png");
+                        path = System.IO.Path.Combine(dataset, "cam1_image" + i +".png");
                     }
                     else
                     {
                         if (j == 2)
                         {
-                            path = System.IO.Path.Combine(myPhotos, "cam2_image" + i + ".png");
+                            path = System.IO.Path.Combine(dataset, "cam2_image" + i + ".png");
                         }
                         else
                         {
                             if (j==3)
                             {
-                                path = System.IO.Path.Combine(myPhotos, "cam3_image" + i + ".png");
+                                path = System.IO.Path.Combine(dataset, "cam3_image" + i + ".png");
                             }
                         }
                     }
@@ -878,76 +877,131 @@ namespace multiKinect
                 Dispatcher.Invoke(contador);
                 i++;
             }
+
+            i = 0;
+            string dataset = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
+            string filename = "";
+            var FileNamePath = Path.Combine(dataset, filename);
+            string file = "";
+            while (i < x-1)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (j == 0)
+                    {
+                        //filename = "cam0_image" + i.ToString() + ".png";
+                        //FileNamePath = Path.Combine(dataset,filename);
+                        file = string.Concat(dataset, "\\cam0_image", i, ".png");
+                    }
+                    else
+                    {
+                        if (j == 1)
+                        {
+                            //filename = "cam1_image" + i.ToString() + ".png";
+                            //FileNamePath = Path.Combine(dataset, filename);
+                            file = string.Concat(dataset, "\\cam1_image", i, ".png");
+                        }
+                        else
+                        {
+                            if (j == 2)
+                            {
+                                //filename = "cam2_image" + i.ToString() + ".png";
+                                //FileNamePath = Path.Combine(dataset, filename);
+                                file = string.Concat(dataset, "\\cam2_image", i, ".png");
+                            }
+                            else
+                            {
+                                if (j == 3)
+                                {
+                                    //filename = "cam3_image" + i.ToString() + ".png";
+                                    //FileNamePath = Path.Combine(dataset, filename);
+                                    file = string.Concat(dataset, "\\cam3_image", i, ".png");
+                                }
+                            }
+                        }
+                    }
+                    /////////////////////
+                    Bitmap originalImage = null;
+                    using (var image = new Bitmap(file))
+                    {
+                        originalImage = new Bitmap(image);
+                    }
+                    Bitmap adjustedImage = new Bitmap(originalImage);
+                    float brightness = 1.0f;
+                    float contrast = 1.0f;
+                    float gamma = 1.2f;
+
+                    float adjustedBrightness = brightness - 1.0f;
+                    // create matrix that will brighten and contrast the image
+                    float[][] ptsArray ={
+                        new float[] {contrast, 0, 0, 0, 0}, // scale red
+                        new float[] {0, contrast, 0, 0, 0}, // scale green
+                        new float[] {0, 0, contrast, 0, 0}, // scale blue
+                        new float[] {0, 0, 0, 1.0f, 0}, // don't scale alpha
+                        new float[] {adjustedBrightness, adjustedBrightness, adjustedBrightness, 0, 1}};
+
+                    ImageAttributes imageAttributes = new ImageAttributes();
+                    imageAttributes.ClearColorMatrix();
+                    imageAttributes.SetColorMatrix(new ColorMatrix(ptsArray), ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+                    imageAttributes.SetGamma(gamma, ColorAdjustType.Bitmap);
+
+                    Graphics g = Graphics.FromImage(adjustedImage);
+                    g.DrawImage(originalImage, new Rectangle(0, 0, adjustedImage.Width, adjustedImage.Height)
+                        , 0, 0, originalImage.Width, originalImage.Height,
+                        GraphicsUnit.Pixel, imageAttributes);
+
+                    adjustedImage.Save(file);
+                    
+                    /////////////////////
+                    i++;
+                }
+                
+            }
         }
         #endregion
 
-
         #region Transform
-        private void updateParameters(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                t1[0] = Double.Parse(t11.Text);
-                t1[1] = Double.Parse(t12.Text);
-                t1[2] = Double.Parse(t13.Text);
-                r1[0] = Double.Parse(r11.Text);
-                r1[1] = Double.Parse(r12.Text);
-                r1[2] = Double.Parse(r13.Text);
 
-                t2[0] = Double.Parse(t21.Text);
-                t2[1] = Double.Parse(t22.Text);
-                t2[2] = Double.Parse(t23.Text);
-                r2[0] = Double.Parse(r21.Text);
-                r2[1] = Double.Parse(r22.Text);
-                r2[2] = Double.Parse(r23.Text);
-
-                t3[0] = Double.Parse(t31.Text);
-                t3[1] = Double.Parse(t32.Text);
-                t3[2] = Double.Parse(t33.Text);
-                r3[0] = Double.Parse(r31.Text);
-                r3[1] = Double.Parse(r32.Text);
-                r3[2] = Double.Parse(r33.Text);
-            }
-            catch (Exception error)
-            {
-                Utils.errorReport(error);
-            }
-        }
-
+       
         public String transformPoint1(Joint inJoint)
         {
+
+            // TODO fix lag here
             //Inputs
             double rx, ry, rz, tx, ty, tz;
             int i = 0;
             workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
-            
 
             tx = ty = tz = rx = ry = rz = 0;
-            try
+
+            if (transformON)
             {
-                rx = Double.Parse(r11.Text);
-                ry = Double.Parse(r12.Text);
-                rz = Double.Parse(r13.Text);
-                tx = Double.Parse(t11.Text);
-                ty = Double.Parse(t12.Text);
-                tz = Double.Parse(t13.Text);
+                
+                try
+                {
+                    rx = Double.Parse(r11.Text);
+                    ry = Double.Parse(r12.Text);
+                    rz = Double.Parse(r13.Text);
+                    tx = Double.Parse(t11.Text);
+                    ty = Double.Parse(t12.Text);
+                    tz = Double.Parse(t13.Text);
+                }
+                catch (Exception) { }
+
+                xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(1, 0, 0), rx));
+                yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(0, 1, 0), ry));
+                zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(0, 0, 1), rz));
+
+                workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
+                workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
+                workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
+                workingPoints[i].X = workingPoints[i].X + tx;
+                workingPoints[i].Y = workingPoints[i].Y + ty;
+                workingPoints[i].Z = workingPoints[i].Z + tz;
             }
-            catch (Exception) { }
-
-            xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(1, 0, 0), rx));
-            yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(0, 1, 0), ry));
-            zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(0, 0, 1), rz));
-
-            workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
-            workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
-            workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
-            workingPoints[i].X = workingPoints[i].X + tx;
-            workingPoints[i].Y = workingPoints[i].Y + ty;
-            workingPoints[i].Z = workingPoints[i].Z + tz;
-            
             
 
             return Coordinates.stringfyPositions(workingPoints[i]);
@@ -960,34 +1014,38 @@ namespace multiKinect
             int i = 1;
             workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
 
-
             tx = ty = tz = rx = ry = rz = 0;
-            try
+            if (transformON)
             {
-                rx = Double.Parse(r21.Text);
-                ry = Double.Parse(r22.Text);
-                rz = Double.Parse(r23.Text);
-                tx = Double.Parse(t21.Text);
-                ty = Double.Parse(t22.Text);
-                tz = Double.Parse(t23.Text);
+                
+                
+                try
+                {
+                    rx = Double.Parse(r21.Text);
+                    ry = Double.Parse(r22.Text);
+                    rz = Double.Parse(r23.Text);
+                    tx = Double.Parse(t21.Text);
+                    ty = Double.Parse(t22.Text);
+                    tz = Double.Parse(t23.Text);
+                }
+
+                catch (Exception) { }
+
+                xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(1, 0, 0), rx));
+                yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(0, 1, 0), ry));
+                zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(0, 0, 1), rz));
+
+                workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
+                workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
+                workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
+                workingPoints[i].X = workingPoints[i].X + tx;
+                workingPoints[i].Y = workingPoints[i].Y + ty;
+                workingPoints[i].Z = workingPoints[i].Z + tz;
+
             }
-            catch (Exception) { }
-
-            xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(1, 0, 0), rx));
-            yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(0, 1, 0), ry));
-            zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(0, 0, 1), rz));
-
-            workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
-            workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
-            workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
-            workingPoints[i].X = workingPoints[i].X + tx;
-            workingPoints[i].Y = workingPoints[i].Y + ty;
-            workingPoints[i].Z = workingPoints[i].Z + tz;
-
-
 
             return Coordinates.stringfyPositions(workingPoints[i]);
             
@@ -1003,31 +1061,34 @@ namespace multiKinect
 
 
             tx = ty = tz = rx = ry = rz = 0;
-            try
+            if (transformON)
             {
-                rx = Double.Parse(r31.Text);
-                ry = Double.Parse(r32.Text);
-                rz = Double.Parse(r33.Text);
-                tx = Double.Parse(t31.Text);
-                ty = Double.Parse(t32.Text);
-                tz = Double.Parse(t33.Text);
+                
+                try
+                {
+                    rx = Double.Parse(r31.Text);
+                    ry = Double.Parse(r32.Text);
+                    rz = Double.Parse(r33.Text);
+                    tx = Double.Parse(t31.Text);
+                    ty = Double.Parse(t32.Text);
+                    tz = Double.Parse(t33.Text);
+                }
+                catch (Exception) { }
+
+                xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(1, 0, 0), rx));
+                yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(0, 1, 0), ry));
+                zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
+                                      new Vector3D(0, 0, 1), rz));
+
+                workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
+                workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
+                workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
+                workingPoints[i].X = workingPoints[i].X + tx;
+                workingPoints[i].Y = workingPoints[i].Y + ty;
+                workingPoints[i].Z = workingPoints[i].Z + tz;
             }
-            catch (Exception) { }
-
-            xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(1, 0, 0), rx));
-            yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(0, 1, 0), ry));
-            zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                  new Vector3D(0, 0, 1), rz));
-
-            workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
-            workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
-            workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
-            workingPoints[i].X = workingPoints[i].X + tx;
-            workingPoints[i].Y = workingPoints[i].Y + ty;
-            workingPoints[i].Z = workingPoints[i].Z + tz;
-
 
 
             return Coordinates.stringfyPositions(workingPoints[i]);
@@ -1048,13 +1109,20 @@ namespace multiKinect
             return Math.Cos(angle);
         }
 
+        private void transformToggle(object sender, RoutedEventArgs e)
+        {
+            if (transformON)
+                transformON = false;
+            else
+                transformON = true;
+            Utils.debugMsg("Transform: " + transformON.ToString());
+
+
+        }
 
         #endregion
 
-       
+        
 
-       
     }
-
-
 }

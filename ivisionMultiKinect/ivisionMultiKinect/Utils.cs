@@ -15,6 +15,11 @@ namespace multiKinect
             MessageBox.Show("Ocorreu um erro ao inicializar os kinects, por favor desconecte e reconecte os cabos USB e reinicie o programa.");
         }
 
+        public static void errorMsg(Exception e)
+        {
+            MessageBox.Show("Ocorreu um erro ao inicializar os kinects, por favor desconecte e reconecte os cabos USB e reinicie o programa. \n" + e.Message);
+        }
+
         public static void msg(String s)
         {
             MessageBox.Show(s);
@@ -33,7 +38,7 @@ namespace multiKinect
 
         public static bool checkCount(ref int[] frameCount, int id)
         {
-            if (frameCount[id]++ == 10)
+            if (frameCount[id]++ == 40)
             {
                 frameCount[id] = 0;
                 return true;
@@ -44,38 +49,5 @@ namespace multiKinect
             }
         }
 
-        #region Deprecated
-        /*Deprectated
-        public void statusMod(int breaks, String s, String option)
-        {
-            switch (option)
-            {
-                case "add":
-                    for (int i = 0; i < breaks; i++)
-                        s = System.Environment.NewLine + s;
-                    Status.Text += s;
-                    break;
-                case "clear":
-                    Status.Text = "";
-                    break;
-                default:
-                    Utils.msg("Fatal error: wrong message in statusMod");
-                    break;
-            }
-
-        }
-
-        public void statusUpdate()
-        {
-            int id = 0;
-            foreach (var kinect in sensors)
-            {
-                statusMod(1, "Kinect" + id + " status: " + kinect.Status, "add");
-                id++;
-            }
-        }
-
-        */
-        #endregion
     }
 }
