@@ -878,6 +878,7 @@ namespace multiKinect
                 i++;
             }
 
+            /*
             i = 0;
             string dataset = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
             string filename = "";
@@ -891,7 +892,7 @@ namespace multiKinect
             else
             {
                 MessageBox.Show("Erro na alteração do brilho. "+t.ToString()+" imagens alteradas.");
-            }
+            }*/
         }
         #endregion
 

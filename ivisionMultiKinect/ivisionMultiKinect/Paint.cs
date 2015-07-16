@@ -70,31 +70,7 @@ namespace ivisionMultiKinect
                         imageAttributes.SetColorMatrix(new ColorMatrix(ptsArray), ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
                         imageAttributes.SetGamma(gamma, ColorAdjustType.Bitmap);
 
-                        if (j == 0)
-                        {
-                            file = string.Concat(dataset, "\\brilho0_image", i, ".png");
-                        }
-                        else
-                        {
-                            if (j == 1)
-                            {
-                                file = string.Concat(dataset, "\\brilho1_image", i, ".png");
-                            }
-                            else
-                            {
-                                if (j == 2)
-                                {
-                                    file = string.Concat(dataset, "\\brilho2_image", i, ".png");
-                                }
-                                else
-                                {
-                                    if (j == 3)
-                                    {
-                                        file = string.Concat(dataset, "\\brilho3_image", i, ".png");
-                                    }
-                                }
-                            }
-                        }
+                        
 
                         adjustedImage.Save(file);
                         cont++;
