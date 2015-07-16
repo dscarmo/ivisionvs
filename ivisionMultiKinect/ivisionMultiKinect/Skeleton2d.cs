@@ -21,20 +21,20 @@ namespace ivisionMultiKinect
         private static RotateTransform3D yrotation;
         private static RotateTransform3D zrotation;
 
-        const int listSize = 16;
+        private const int listSize = 16;
 
         public Skeleton2d(Skeleton skel)
         {
             this.skel = skel;
             this.pointList = new List<SkeletonPoint>();
             this.transformedPointList = new List<SkeletonPoint>();
+            this.setPoints();
         }
         public String getStringPoints()
         {
             if (stringEnable)
             {
                 StringBuilder sbuilder = new StringBuilder();
-                this.setPoints();
                 for (int i = 0; i < listSize; i++)
                 {
                     sbuilder.Append(pointList[i].getFormatedString());

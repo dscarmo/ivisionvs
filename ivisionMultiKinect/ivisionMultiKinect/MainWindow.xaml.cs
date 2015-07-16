@@ -545,7 +545,7 @@ namespace multiKinect
                                 {
                                     case 0:
                                         skeleton0 = new Skeleton2d(skel);
-                                        Hand0.Text = skeleton0.getStringPoints();
+                                        Skel0.Text = skeleton0.getStringPoints();
                                         //Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
                                         break;
                                     case 1:
@@ -553,21 +553,22 @@ namespace multiKinect
                                         skeleton1 = new Skeleton2d(skel);
                                         Skel1.Text = skeleton1.getStringPoints();
                                         //hand1 = skel.Joints[JointType.HandLeft];//this will be skeleton2d - OK 
-                                        Skel1to0.Text = transformSkeleton1();//need a complete transform method in skeleton2d - TODO 
+                                        Skel1to0.Text = transformSkeleton1(1);//need a complete transform method in skeleton2d - TODO 
                                         //Hand1.Text = Coordinates.stringfyPositions(hand1);//need a complete stringfy - OK
                                         break;
                                     case 2:
                                         skeleton2 = new Skeleton2d(skel);
-                                        Hand2.Text = skeleton2.getStringPoints();
+                                        Skel2.Text = skeleton2.getStringPoints();
                                         //hand2 = skel.Joints[JointType.HandLeft];
-                                        //Hand2to0.Text = transformPoint2(hand2);
+                                        Skel2to0.Text = transformSkeleton1(2);
                                         //Hand2.Text = Coordinates.stringfyPositions(hand2);
                                         break;
                                     case 3:
-                                        hand3 = skel.Joints[JointType.HandLeft];
+                                        //No more 4 kinects
+                                        /*hand3 = skel.Joints[JointType.HandLeft];
                                         
                                         Hand3to0.Text = transformPoint3(hand3);
-                                        Hand3.Text = Coordinates.stringfyPositions(hand3);
+                                        Hand3.Text = Coordinates.stringfyPositions(hand3);*/
                                         break;
 
                                 }
@@ -942,7 +943,7 @@ namespace multiKinect
 
 
         }*/
-        public String transformSkeleton1()
+        public String transformSkeleton1(int callingKinect)
         {
 
             // TODO kill this
@@ -952,22 +953,49 @@ namespace multiKinect
 
             if (transformON)
             {
-
-                try
+                switch (callingKinect)
                 {
-                    rx = Double.Parse(r11.Text);
-                    ry = Double.Parse(r12.Text);
-                    rz = Double.Parse(r13.Text);
-                    tx = Double.Parse(t11.Text);
-                    ty = Double.Parse(t12.Text);
-                    tz = Double.Parse(t13.Text);
-                }
-                catch (Exception e) {
-                    Utils.debugMsg(e.Message);
-                }
+                    case 1:
+                        try
+                        {
+                            rx = Double.Parse(r11.Text);
+                            ry = Double.Parse(r12.Text);
+                            rz = Double.Parse(r13.Text);
+                            tx = Double.Parse(t11.Text);
+                            ty = Double.Parse(t12.Text);
+                            tz = Double.Parse(t13.Text);
+                        }
+                        catch (Exception e)
+                        {
+                            Utils.debugMsg(e.Message);
+                        }
 
-                skeleton1.generateTransformedList(rx, ry, rz, tx, ty, tz);
-                return skeleton1.getTransformedPoints();
+                        skeleton1.generateTransformedList(rx, ry, rz, tx, ty, tz);
+                        return skeleton1.getTransformedPoints();
+                    case 2:
+                        try
+                        {
+                            rx = Double.Parse(r21.Text);
+                            ry = Double.Parse(r22.Text);
+                            rz = Double.Parse(r23.Text);
+                            tx = Double.Parse(t21.Text);
+                            ty = Double.Parse(t22.Text);
+                            tz = Double.Parse(t23.Text);
+                        }
+                        catch (Exception e)
+                        {
+                            Utils.debugMsg(e.Message);
+                        }
+
+                        skeleton2.generateTransformedList(rx, ry, rz, tx, ty, tz);
+                        return skeleton2.getTransformedPoints();
+                    
+                    default:
+                        
+                        return "error in transform";
+                        
+                        
+                }
             }
 
             else return "transform disabled or error ocurred";
