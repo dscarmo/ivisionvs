@@ -27,6 +27,7 @@ namespace multiKinect
         const int howManyKinects = 3;
         //Back one month
         //Yan test
+        //Test personal note
 
         #region Color Lists
         /// <summary>
