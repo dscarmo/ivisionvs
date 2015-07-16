@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AutoClosingMessageBox.cs" />
+    <Compile Include="CompositeSkeleton.cs" />
     <Compile Include="DepthColorizer.cs" />
     <Compile Include="Paint.cs" />
     <Compile Include="Skeleton2d.cs" />

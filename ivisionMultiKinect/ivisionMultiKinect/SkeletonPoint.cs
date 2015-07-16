@@ -31,6 +31,11 @@ namespace ivisionMultiKinect
         public Point3D getPoint(){
             return this.point;
         }
+
+        public void setPoint(Point3D inPoint)
+        {
+            this.point = inPoint;
+        }
         
         public String getJointName(){
             return this.jointName;

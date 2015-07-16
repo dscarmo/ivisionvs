@@ -128,7 +128,7 @@ namespace multiKinect
         bool updateAlive;
         
         //Stream
-        int streamChoosing;
+        int streamChoosing = 2; //initialize in IR
         
         //????
         int i, j, kid = 0;
@@ -179,7 +179,7 @@ namespace multiKinect
                 try
                 {
                     if (useLessKinects) if (kid == howManyKinects) break;
-                    streamChoosing = 1;
+                    
                     if (null != kinect)
                     {
 
@@ -316,7 +316,7 @@ namespace multiKinect
                         break;
                 }
             }
-            else
+            else if (streamChoosing == 2)
             {
                 switch (kid)
                 {
@@ -332,30 +332,37 @@ namespace multiKinect
                         break;
                 }
             }
+            else
+            { }
         }
 
         private void switchbt_Click(object sender, RoutedEventArgs e)
         {
+            
             if (streamChoosing == 1) //ir
             {
+                streamChoosing++;
                 Utils.debugMsg("switching to depth");
                 for (int i = 0; i < kid; i++)
                 {
                     switchShowing(i);
-                } 
-                streamChoosing = 2;
+                }
+                
             }
             else if (streamChoosing == 2) //DEPTH
             {
+                streamChoosing = 0;
+                Utils.msg("turning stream off, click switch again to turn on");     
+            }
+            else {
                 Utils.debugMsg("switching to ir");
+                streamChoosing = 1;
                 for (int i = 0; i < kid; i++)
                 {
                     switchShowing(i);
                 } 
-                
-                streamChoosing = 1;
             }
-           
+            
         }
 
         /// <summary>
@@ -382,7 +389,7 @@ namespace multiKinect
         private DepthColorizer colorizer = new DepthColorizer();
         private void SensorDepthFrameReady(object sender, DepthImageFrameReadyEventArgs e, int index)
         {
-            if (streamChoosing == 2)
+            if (streamChoosing == 1)
             {
                 using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
                 {
@@ -448,7 +455,7 @@ namespace multiKinect
         private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e, int index)
         {
 
-            if (streamChoosing == 1)
+            if (streamChoosing == 2)
             {
                 using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
                 {
@@ -544,9 +551,9 @@ namespace multiKinect
                                     case 1:
                                         // TODO TODO TODO 
                                         skeleton1 = new Skeleton2d(skel);
-                                        Hand1.Text = skeleton1.getStringPoints();
+                                        Skel1.Text = skeleton1.getStringPoints();
                                         //hand1 = skel.Joints[JointType.HandLeft];//this will be skeleton2d - OK 
-                                        //Hand1to0.Text = transformPoint1(hand1);//need a complete transform method in skeleton2d - TODO 
+                                        Skel1to0.Text = transformSkeleton1();//need a complete transform method in skeleton2d - TODO 
                                         //Hand1.Text = Coordinates.stringfyPositions(hand1);//need a complete stringfy - OK
                                         break;
                                     case 2:
@@ -898,21 +905,14 @@ namespace multiKinect
 
         #region Transform
 
-       
-        public String transformPoint1(Joint inJoint)
+        /*public void getParameters()
         {
-
-            // TODO fix lag here
-            //Inputs
             double rx, ry, rz, tx, ty, tz;
-            int i = 0;
-            workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
-
             tx = ty = tz = rx = ry = rz = 0;
 
             if (transformON)
             {
-                
+
                 try
                 {
                     rx = Double.Parse(r11.Text);
@@ -938,11 +938,42 @@ namespace multiKinect
                 workingPoints[i].Y = workingPoints[i].Y + ty;
                 workingPoints[i].Z = workingPoints[i].Z + tz;
             }
+
+
+        }*/
+        public String transformSkeleton1()
+        {
+
+            // TODO kill this
+            //Inputs
+            double rx, ry, rz, tx, ty, tz;
+            tx = ty = tz = rx = ry = rz = 0;
+
+            if (transformON)
+            {
+
+                try
+                {
+                    rx = Double.Parse(r11.Text);
+                    ry = Double.Parse(r12.Text);
+                    rz = Double.Parse(r13.Text);
+                    tx = Double.Parse(t11.Text);
+                    ty = Double.Parse(t12.Text);
+                    tz = Double.Parse(t13.Text);
+                }
+                catch (Exception e) {
+                    Utils.debugMsg(e.Message);
+                }
+
+                skeleton1.generateTransformedList(rx, ry, rz, tx, ty, tz);
+                return skeleton1.getTransformedPoints();
+            }
+
+            else return "transform disabled or error ocurred";
             
 
-            return Coordinates.stringfyPositions(workingPoints[i]);
-
         }
+
         public String transformPoint2(Joint inJoint)
         {
             //Inputs
