@@ -976,12 +976,12 @@ namespace multiKinect
                     case 1:
                         try
                         {
-                            rx = Double.Parse(r11.Text);
-                            ry = Double.Parse(r12.Text);
-                            rz = Double.Parse(r13.Text);
-                            tx = Double.Parse(t11.Text);
-                            ty = Double.Parse(t12.Text);
-                            tz = Double.Parse(t13.Text);
+                            rx = Utils.radToDegree(Double.Parse(r11.Text));
+                            ry = Utils.radToDegree(Double.Parse(r12.Text));
+                            rz = Utils.radToDegree(Double.Parse(r13.Text));
+                            tx = Utils.radToDegree(Double.Parse(t11.Text));
+                            ty = Utils.radToDegree(Double.Parse(t12.Text));
+                            tz = Utils.radToDegree(Double.Parse(t13.Text));
                         }
                         catch (Exception e)
                         {
@@ -993,12 +993,12 @@ namespace multiKinect
                     case 2:
                         try
                         {
-                            rx = Double.Parse(r21.Text);
-                            ry = Double.Parse(r22.Text);
-                            rz = Double.Parse(r23.Text);
-                            tx = Double.Parse(t21.Text);
-                            ty = Double.Parse(t22.Text);
-                            tz = Double.Parse(t23.Text);
+                            rx = Utils.radToDegree(Double.Parse(r21.Text));
+                            ry = Utils.radToDegree(Double.Parse(r22.Text));
+                            rz = Utils.radToDegree(Double.Parse(r23.Text));
+                            tx = Utils.radToDegree(Double.Parse(t21.Text));
+                            ty = Utils.radToDegree(Double.Parse(t22.Text));
+                            tz = Utils.radToDegree(Double.Parse(t23.Text));
                         }
                         catch (Exception e)
                         {

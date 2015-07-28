@@ -15,6 +15,7 @@ namespace ivisionMultiKinect
          */
         private List<SkeletonPoint> pointList;
         private const int listSize = 16;
+        private IList<Point3D> points3d {get;set;}
 
         public String calculateCompositeSkeleton(List<SkeletonPoint> ske1, List<SkeletonPoint> ske2, List<SkeletonPoint> ske3)
         {
@@ -23,18 +24,20 @@ namespace ivisionMultiKinect
             * then to pointList.
             */
             String pointName;
+            Point3D averagePoint;
             this.pointList = new List<SkeletonPoint>();
            // int i = 0;
             for (int i = 0; i < listSize; i++)
             {
                 pointName = ske1[i].getJointName();
-                Console.WriteLine("passou do joint");
-                pointList.Add(new SkeletonPoint(pointName,
-                                                getAveragePoint(ske1[i].getPoint(), ske2[i].getPoint(), ske3[i].getPoint())));
+                averagePoint = getAveragePoint(ske1[i].getPoint(), ske2[i].getPoint(), ske3[i].getPoint());
+                points3d.Add(averagePoint);
+                pointList.Add(new SkeletonPoint(pointName, averagePoint));
             }
 
             return this.getStringPoints();
         }
+
 
         public Point3D getAveragePoint(Point3D p1, Point3D p2, Point3D p3)
         {
