@@ -812,15 +812,16 @@ namespace multiKinect
             {
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 // create frame from the writable bitmap and add to encoder
-                if (streamChoosing == 1 | streamChoosing == 3)
+                if (streamChoosing == 2)
                 {
                     encoder.Frames.Add(BitmapFrame.Create(colorBitmap[j]));
                 }
-                else if (streamChoosing == 2)
+                else if (streamChoosing == 1 | streamChoosing == 3)
                 {
                     encoder.Frames.Add(BitmapFrame.Create(depthBitmap[j]));
                 }
-                string dataset = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
+                //string dataset = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
+                string dataset = "C:\\dataset";
                 //Environment.SpecialFolder.MyPictures
 
                 string path = "";
