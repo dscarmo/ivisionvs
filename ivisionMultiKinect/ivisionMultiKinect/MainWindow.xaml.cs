@@ -122,6 +122,7 @@ namespace multiKinect
 
         //Skeleton
         Designer designer;
+        CompositeSkeleton compSkeleton;
         Skeleton2d skeleton0, skeleton1, skeleton2, skeleton3;
 
         //Angle Thread 
@@ -165,6 +166,11 @@ namespace multiKinect
             
             t_angleUpdate = new Thread(update);
             designer = new Designer(ref sensors);
+            compSkeleton = new CompositeSkeleton();
+            skeleton0 = new Skeleton2d();
+            skeleton1 = new Skeleton2d();
+            skeleton2 = new Skeleton2d();
+            skeleton3 = new Skeleton2d();
             //t_angleUpdate = new Thread(update);
             r1 = new double[3] { 0.0, 0.0, 0.0 };
             r2 = new double[3] { 0.0, 0.0, 0.0 };
@@ -272,9 +278,10 @@ namespace multiKinect
                                 kinect.Start();
 
                         }
-                        catch (IOException)
+                        catch (IOException error)
                         {
-                            Utils.msg("kinect id:" + kid + "failed to start.");
+                            Utils.msg("kinect id:" + kid + "failed to start: " + error.Message );
+                           
                         }
                     }
                 }
@@ -553,14 +560,14 @@ namespace multiKinect
                                         skeleton1 = new Skeleton2d(skel);
                                         Skel1.Text = skeleton1.getStringPoints();
                                         //hand1 = skel.Joints[JointType.HandLeft];//this will be skeleton2d - OK 
-                                        Skel1to0.Text = transformSkeleton1(1);//need a complete transform method in skeleton2d - TODO 
+                                        Skel1to0.Text = transformSkeleton(1);//need a complete transform method in skeleton2d - TODO 
                                         //Hand1.Text = Coordinates.stringfyPositions(hand1);//need a complete stringfy - OK
                                         break;
                                     case 2:
                                         skeleton2 = new Skeleton2d(skel);
                                         Skel2.Text = skeleton2.getStringPoints();
                                         //hand2 = skel.Joints[JointType.HandLeft];
-                                        Skel2to0.Text = transformSkeleton1(2);
+                                        Skel2to0.Text = transformSkeleton(2);
                                         //Hand2.Text = Coordinates.stringfyPositions(hand2);
                                         break;
                                     case 3:
@@ -572,6 +579,16 @@ namespace multiKinect
                                         break;
 
                                 }
+
+                                if (skeleton0.safeToGetSkeleton() & skeleton1.safeToGetTransform() & skeleton2.safeToGetTransform())
+                                {
+                                    Utils.debugMsg("here, we, go.");
+                                    compSke.Text = compSkeleton.calculateCompositeSkeleton(skeleton0.getPointList(), skeleton1.getTransformedList(), skeleton2.getTransformedList());
+                                }
+                                else
+                                    compSke.Text = "Not safe to compose Skeleton";
+                                
+
                             }
 
 
@@ -943,10 +960,10 @@ namespace multiKinect
 
 
         }*/
-        public String transformSkeleton1(int callingKinect)
+        public String transformSkeleton(int callingKinect)
         {
 
-            // TODO kill this
+           
             //Inputs
             double rx, ry, rz, tx, ty, tz;
             tx = ty = tz = rx = ry = rz = 0;
@@ -971,7 +988,7 @@ namespace multiKinect
                         }
 
                         skeleton1.generateTransformedList(rx, ry, rz, tx, ty, tz);
-                        return skeleton1.getTransformedPoints();
+                        return skeleton1.getTransformedStringPoints();
                     case 2:
                         try
                         {
@@ -988,7 +1005,7 @@ namespace multiKinect
                         }
 
                         skeleton2.generateTransformedList(rx, ry, rz, tx, ty, tz);
-                        return skeleton2.getTransformedPoints();
+                        return skeleton2.getTransformedStringPoints();
                     
                     default:
                         
@@ -1003,7 +1020,7 @@ namespace multiKinect
 
         }
 
-        public String transformPoint2(Joint inJoint)
+        /*public String transformPoint2(Joint inJoint)
         {
             //Inputs
             double rx, ry, rz, tx, ty, tz;
@@ -1089,7 +1106,7 @@ namespace multiKinect
 
             return Coordinates.stringfyPositions(workingPoints[i]);
 
-        }
+        }*/
         private double deegresToRadians(double deegres)
         {
             return deegres * (Math.PI / 180);
@@ -1111,7 +1128,7 @@ namespace multiKinect
                 transformON = false;
             else
                 transformON = true;
-            Utils.debugMsg("Transform: " + transformON.ToString());
+            transformstatus.Text = transformON ? "on" : "off";
 
 
         }

@@ -23,7 +23,7 @@
             <TextBox x:Name="Skel2" HorizontalAlignment="Left" Height="223" Margin="415,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="198"/>
             <TextBox x:Name="Skel1" HorizontalAlignment="Left" Height="276" Margin="810,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="155"/>
             <TextBox x:Name="Hand3" HorizontalAlignment="Left" Height="255" Margin="810,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150"/>
-            <Label Content="Multi Kinect Hand Position Viewer" HorizontalAlignment="Left" Height="47" Margin="509,10,0,0" VerticalAlignment="Top" Width="381" FontSize="24"/>
+            <Label Content="Multi Kinect Composite Skeleton Viewer" HorizontalAlignment="Left" Height="47" Margin="448,10,0,0" VerticalAlignment="Top" Width="442" FontSize="24"/>
             <Label Content="Hand Coordinates " HorizontalAlignment="Left" Height="26" Margin="420,129,0,0" VerticalAlignment="Top" Width="108"/>
             <Label Content="Hand Coordinates " HorizontalAlignment="Left" Height="26" Margin="852,129,0,0" VerticalAlignment="Top" Width="108"/>
             <Label Content="Hand Coordinates " HorizontalAlignment="Left" Height="26" Margin="415,578,0,0" VerticalAlignment="Top" Width="108"/>
@@ -67,7 +67,7 @@
             <TextBox x:Name="r11" HorizontalAlignment="Left" Height="23" Margin="1443,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
             <TextBox x:Name="r12" HorizontalAlignment="Left" Height="23" Margin="1480,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
             <TextBox x:Name="r13" HorizontalAlignment="Left" Height="23" Margin="1517,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
-            <Button Content="Transform ON/OFF" HorizontalAlignment="Left" Margin="1443,299,0,0" VerticalAlignment="Top" Width="109" Click="transformToggle"/>
+            <Button Content="Transform ON/OFF" HorizontalAlignment="Left" Margin="1373,299,0,0" VerticalAlignment="Top" Width="109" Click="transformToggle"/>
             <TextBox x:Name="Skel1to0" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="52" Margin="1370,324,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
             <TextBox x:Name="Skel2to0" HorizontalAlignment="Left" Height="42" Margin="1373,381,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="158"/>
             <TextBox x:Name="Hand3to0" HorizontalAlignment="Left" Height="53" Margin="1372,428,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="158"/>
@@ -98,6 +98,9 @@
             <Label Content="4 to 1" HorizontalAlignment="Left" Margin="1370,275,0,0" VerticalAlignment="Top" FontSize="8"/>
             <Button x:Name="switchbt" Content="Switch" HorizontalAlignment="Left" Margin="1498,839,0,0" VerticalAlignment="Top" Width="75" Click="switchbt_Click"/>
             <Button x:Name="stringStream" Content="Show Joints" HorizontalAlignment="Left" Margin="676,410,0,0" VerticalAlignment="Top" Width="75" Click="stringStream_Click"/>
+            <TextBox x:Name="compSke" HorizontalAlignment="Left" Height="277" Margin="634,507,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="158"/>
+            <Label Content="Composite Skeleton" HorizontalAlignment="Left" Height="26" Margin="652,476,0,0" VerticalAlignment="Top" Width="121"/>
+            <TextBox x:Name="transformstatus" HorizontalAlignment="Left" Height="23" Margin="1487,301,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50" Text="off"/>
 
         </Grid>
     </ScrollViewer>
