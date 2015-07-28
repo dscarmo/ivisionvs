@@ -32,8 +32,7 @@ namespace multiKinect
 
         public static void errorReport(Exception e)
         {
-            //MessageBox.Show(e.Message);
-            AutoClosingMessageBox.Show(e.Message, "Error", 2000);
+            MessageBox.Show(e.Message);
         }
 
         public static bool checkCount(ref int[] frameCount, int id)

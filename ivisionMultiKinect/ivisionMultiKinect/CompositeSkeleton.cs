@@ -16,18 +16,51 @@ namespace ivisionMultiKinect
         private List<SkeletonPoint> pointList;
         private const int listSize = 16;
 
-        public CompositeSkeleton(Skeleton2d ske1, Skeleton2d ske2, Skeleton2d ske3)
+        public String calculateCompositeSkeleton(List<SkeletonPoint> ske1, List<SkeletonPoint> ske2, List<SkeletonPoint> ske3)
         {
+            /* 
+            *  Get 3 already transformed skeletons lists and calculates the average point, adding
+            * then to pointList.
+            */
             String pointName;
             this.pointList = new List<SkeletonPoint>();
+           // int i = 0;
             for (int i = 0; i < listSize; i++)
             {
-               //TO DO
-            }    
+                pointName = ske1[i].getJointName();
+                Console.WriteLine("passou do joint");
+                pointList.Add(new SkeletonPoint(pointName,
+                                                getAveragePoint(ske1[i].getPoint(), ske2[i].getPoint(), ske3[i].getPoint())));
+            }
+
+            return this.getStringPoints();
         }
 
-        /*private Point3D pointAverage(Point3D p1, Point3D p2, Point3D p3){
-            // TO DO
-        }*/
+        public Point3D getAveragePoint(Point3D p1, Point3D p2, Point3D p3)
+        {
+            //P1 has more impact in the average due to more reliability
+            double x = (3*p1.X + p2.X + p3.X)/5;
+            double y = (3*p1.Y + p2.Y + p3.Y)/5;
+            double z = (3*p1.Z + p2.Z + p3.Z)/5;
+            return new Point3D(x, y, z);
+        }
+
+        public String getStringPoints()
+        {
+            if (Skeleton2d.stringEnable)
+            {
+                StringBuilder sbuilder = new StringBuilder();
+                for (int i = 0; i < listSize; i++)
+                {
+                    sbuilder.Append(pointList[i].getFormatedString());
+                }
+                return sbuilder.ToString();
+            }
+            else
+                return "String stream disabled.";
+        }
+
+
+        
     }
 }

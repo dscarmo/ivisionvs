@@ -55,7 +55,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AutoClosingMessageBox.cs" />
     <Compile Include="CompositeSkeleton.cs" />
     <Compile Include="DepthColorizer.cs" />
     <Compile Include="Paint.cs" />

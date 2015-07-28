@@ -16,10 +16,12 @@ namespace ivisionMultiKinect
                         left_foot, right_foot;*/
         private List<SkeletonPoint> pointList;
         private List<SkeletonPoint> transformedPointList;
-        private static Boolean stringEnable = false;
+        public static Boolean stringEnable = false;
         private static RotateTransform3D xrotation;
         private static RotateTransform3D yrotation;
         private static RotateTransform3D zrotation;
+        private bool safeGet = false;
+        private bool safeGetTransform = false;
 
         private const int listSize = 16;
 
@@ -30,9 +32,15 @@ namespace ivisionMultiKinect
             this.transformedPointList = new List<SkeletonPoint>();
             this.setPoints();
         }
+
+        public Skeleton2d() {
+            this.pointList = new List<SkeletonPoint>();
+            this.transformedPointList = new List<SkeletonPoint>();
+        }
+
         public String getStringPoints()
         {
-            if (stringEnable)
+            if (Skeleton2d.stringEnable & this.safeGet)
             {
                 StringBuilder sbuilder = new StringBuilder();
                 for (int i = 0; i < listSize; i++)
@@ -42,10 +50,10 @@ namespace ivisionMultiKinect
                 return sbuilder.ToString();
             }
             else
-                return "String stream disabled.";
+                return "String stream disabled, or skeleton is null.";
         }
 
-        public String getTransformedPoints()
+        public String getTransformedStringPoints()
         {
             StringBuilder sbuilder = new StringBuilder();
             for (int i = 0; i < listSize; i++)
@@ -55,9 +63,30 @@ namespace ivisionMultiKinect
             return sbuilder.ToString();
         }
 
+        public bool safeToGetSkeleton()
+        {
+            return this.safeGet;
+        }
+
+        public bool safeToGetTransform()
+        {
+            return this.safeGetTransform;
+        }
+
+        public List<SkeletonPoint> getPointList()
+        {
+            if (this.safeGet)
+                return pointList;
+            else
+                return null;
+        }
+
         public List<SkeletonPoint> getTransformedList()
         {
-            return transformedPointList;
+            if (this.safeGet)
+                return transformedPointList;
+            else
+                return null;
         }
 
         private void setPoints()
@@ -78,6 +107,7 @@ namespace ivisionMultiKinect
             pointList.Add(new SkeletonPoint("knee right", jointToPoint3D(skel.Joints[JointType.KneeRight])));
             pointList.Add(new SkeletonPoint("ankle left", jointToPoint3D(skel.Joints[JointType.AnkleLeft])));
             pointList.Add(new SkeletonPoint("ankle right", jointToPoint3D(skel.Joints[JointType.AnkleRight])));
+            this.safeGet = true;
         }
 
         public void generateTransformedList(double rx, double ry, double rz, double tx, double ty, double tz)
@@ -100,7 +130,7 @@ namespace ivisionMultiKinect
                                          transformPoint(rx, ry, rz, tx, ty, tz, pointList[i].getPoint())));
             }
             //
-
+            this.safeGetTransform = true;
         }
 
         public Point3D transformPoint(double rx, double ry, double rz, double tx, double ty, double tz, Point3D inPoint)
@@ -135,7 +165,7 @@ namespace ivisionMultiKinect
         }
 
             
-      //TODO create points 3d to storage all skeleton joints
+      
 
     }
 }
