@@ -65,7 +65,6 @@
     </ApplicationDefinition>
     <Compile Include="CompositeSkeleton.cs" />
     <Compile Include="DepthColorizer.cs" />
-    <Compile Include="Paint.cs" />
     <Compile Include="Skeleton2d.cs" />
     <Compile Include="SkeletonPoint.cs" />
     <Compile Include="Utils.cs" />
@@ -77,7 +76,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Coordinates.cs" />
     <Compile Include="Designer.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

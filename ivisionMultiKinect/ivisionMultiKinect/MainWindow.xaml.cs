@@ -136,7 +136,6 @@ namespace multiKinect
         //????
         int i, j, kid = 0;
         
-        Joint hand1, hand2, hand3; //To be transformed to hand0;
         private Thread t_angleUpdate;
         
         //Transform things
@@ -149,10 +148,11 @@ namespace multiKinect
         double[] r1, r2, r3, t1, t2, t3;
 
         //3D Skeleton
-        private EllipsoidVisual3D esfera;
         private PointsVisual3D testPoint;
         private ArrowVisual3D[] arrow;
-
+        private PipeVisual3D[] pipes;
+        private List<int[]> vetores;
+        private EllipsoidVisual3D leftHand;
 
         #endregion
 
@@ -528,6 +528,8 @@ namespace multiKinect
         private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e, int index)
         {
             Skeleton[] skeletons = new Skeleton[0];
+            
+            Skeleton usingSkeleton = new Skeleton();
 
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
             {
@@ -545,33 +547,37 @@ namespace multiKinect
 
                 if (skeletons.Length != 0)
                 {
+                    
                     foreach (Skeleton skel in skeletons)
                     {
-                        designer.RenderClippedEdges(skel, dc);
-
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
+                            usingSkeleton = skel;
+                    }
+                        designer.RenderClippedEdges(usingSkeleton, dc);
+
+                        if (usingSkeleton.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            
-                            designer.DrawBonesAndJoints(skel, dc, index);
+
+                            designer.DrawBonesAndJoints(usingSkeleton, dc, index);
                             if (Utils.checkCount(ref frameCount, index))
                             {
                                 switch (index)
                                 {
                                     case 0:
-                                        skeleton0 = new Skeleton2d(skel);
+                                        skeleton0 = new Skeleton2d(usingSkeleton);
                                         Skel0.Text = skeleton0.getStringPoints();
                                         //Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
                                         break;
                                     case 1:
                                         // TODO TODO TODO 
-                                        skeleton1 = new Skeleton2d(skel);
+                                        skeleton1 = new Skeleton2d(usingSkeleton);
                                         Skel1.Text = skeleton1.getStringPoints();
                                         //hand1 = skel.Joints[JointType.HandLeft];//this will be skeleton2d - OK 
                                         Skel1to0.Text = transformSkeleton(1);//need a complete transform method in skeleton2d - TODO 
                                         //Hand1.Text = Coordinates.stringfyPositions(hand1);//need a complete stringfy - OK
                                         break;
                                     case 2:
-                                        skeleton2 = new Skeleton2d(skel);
+                                        skeleton2 = new Skeleton2d(usingSkeleton);
                                         Skel2.Text = skeleton2.getStringPoints();
                                         //hand2 = skel.Joints[JointType.HandLeft];
                                         Skel2to0.Text = transformSkeleton(2);
@@ -589,9 +595,8 @@ namespace multiKinect
 
                                 if (skeleton0.safeToGetSkeleton() & skeleton1.safeToGetTransform() & skeleton2.safeToGetTransform())
                                 {
-                                    Utils.debugMsg("here, we, go.");
                                     compSke.Text = compSkeleton.calculateCompositeSkeleton(skeleton0.getPointList(), skeleton1.getTransformedList(), skeleton2.getTransformedList());
-                                    setPoints3D();
+                                    update3D();
                                 }
                                 else
                                     compSke.Text = "Not safe to compose Skeleton";
@@ -601,16 +606,16 @@ namespace multiKinect
 
 
                         }
-                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
+                        else if (usingSkeleton.TrackingState == SkeletonTrackingState.PositionOnly)
                         {
                             dc.DrawEllipse(
                             this.centerPointBrush,
                             null,
-                            designer.SkeletonPointToScreen(skel.Position, index),
+                            designer.SkeletonPointToScreen(usingSkeleton.Position, index),
                             BodyCenterThickness,
                             BodyCenterThickness);
                         }
-                    }
+                    
 
                     // prevent drawing outside of our render area
                     this.drawingGroup[index].ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
@@ -918,42 +923,6 @@ namespace multiKinect
 
         #region Transform
 
-        /*public void getParameters()
-        {
-            double rx, ry, rz, tx, ty, tz;
-            tx = ty = tz = rx = ry = rz = 0;
-
-            if (transformON)
-            {
-
-                try
-                {
-                    rx = Double.Parse(r11.Text);
-                    ry = Double.Parse(r12.Text);
-                    rz = Double.Parse(r13.Text);
-                    tx = Double.Parse(t11.Text);
-                    ty = Double.Parse(t12.Text);
-                    tz = Double.Parse(t13.Text);
-                }
-                catch (Exception) { }
-
-                xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(1, 0, 0), rx));
-                yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(0, 1, 0), ry));
-                zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(0, 0, 1), rz));
-
-                workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
-                workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
-                workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
-                workingPoints[i].X = workingPoints[i].X + tx;
-                workingPoints[i].Y = workingPoints[i].Y + ty;
-                workingPoints[i].Z = workingPoints[i].Z + tz;
-            }
-
-
-        }*/
         public String transformSkeleton(int callingKinect)
         {
 
@@ -1014,93 +983,7 @@ namespace multiKinect
 
         }
 
-        /*public String transformPoint2(Joint inJoint)
-        {
-            //Inputs
-            double rx, ry, rz, tx, ty, tz;
-            int i = 1;
-            workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
-
-            tx = ty = tz = rx = ry = rz = 0;
-            if (transformON)
-            {
-                
-                
-                try
-                {
-                    rx = Double.Parse(r21.Text);
-                    ry = Double.Parse(r22.Text);
-                    rz = Double.Parse(r23.Text);
-                    tx = Double.Parse(t21.Text);
-                    ty = Double.Parse(t22.Text);
-                    tz = Double.Parse(t23.Text);
-                }
-
-                catch (Exception) { }
-
-                xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(1, 0, 0), rx));
-                yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(0, 1, 0), ry));
-                zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(0, 0, 1), rz));
-
-                workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
-                workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
-                workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
-                workingPoints[i].X = workingPoints[i].X + tx;
-                workingPoints[i].Y = workingPoints[i].Y + ty;
-                workingPoints[i].Z = workingPoints[i].Z + tz;
-
-            }
-
-            return Coordinates.stringfyPositions(workingPoints[i]);
-            
-        }
-
         
-        public String transformPoint3(Joint inJoint)
-        {
-            //Inputs
-            double rx, ry, rz, tx, ty, tz;
-            int i = 2;
-            workingPoints[i] = new Point3D(inJoint.Position.X, inJoint.Position.Y, inJoint.Position.Z);
-
-
-            tx = ty = tz = rx = ry = rz = 0;
-            if (transformON)
-            {
-                
-                try
-                {
-                    rx = Double.Parse(r31.Text);
-                    ry = Double.Parse(r32.Text);
-                    rz = Double.Parse(r33.Text);
-                    tx = Double.Parse(t31.Text);
-                    ty = Double.Parse(t32.Text);
-                    tz = Double.Parse(t33.Text);
-                }
-                catch (Exception) { }
-
-                xrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(1, 0, 0), rx));
-                yrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(0, 1, 0), ry));
-                zrotation[i] = new RotateTransform3D(new AxisAngleRotation3D(
-                                      new Vector3D(0, 0, 1), rz));
-
-                workingPoints[i] = xrotation[i].Transform(workingPoints[i]);
-                workingPoints[i] = yrotation[i].Transform(workingPoints[i]);
-                workingPoints[i] = zrotation[i].Transform(workingPoints[i]);
-                workingPoints[i].X = workingPoints[i].X + tx;
-                workingPoints[i].Y = workingPoints[i].Y + ty;
-                workingPoints[i].Z = workingPoints[i].Z + tz;
-            }
-
-
-            return Coordinates.stringfyPositions(workingPoints[i]);
-
-        }*/
         private double deegresToRadians(double deegres)
         {
             return deegres * (Math.PI / 180);
@@ -1134,26 +1017,87 @@ namespace multiKinect
 
         private void initialize3D()
         {
-            esfera = new EllipsoidVisual3D();
+
             testPoint = new PointsVisual3D();
             arrow = new ArrowVisual3D[3] { new ArrowVisual3D(), new ArrowVisual3D(), new ArrowVisual3D() };
+            pipes = new PipeVisual3D[15];
+            leftHand = new EllipsoidVisual3D();
+            vetores = new List<int[]>();
+            
+            //Arrows
+            arrow[0].Direction = new Vector3D(0, 0, 1);
+            arrow[1].Direction = new Vector3D(0, 1, 0);
+            arrow[2].Direction = new Vector3D(1, 0, 0);
+            foreach (ArrowVisual3D a in arrow)
+            {
+                a.Diameter = 0.1;
+                a.HeadLength = 0.5;
+            }
 
+            //Pipes
+            int pipeCount = 0;
+            foreach (PipeVisual3D p in pipes)
+            {
+                pipes[pipeCount] = new PipeVisual3D();
+                pipes[pipeCount].Diameter = 0.05;
+                pipeCount++;
+            }
+            vetores.Add(new int[2] { 0, 2 });
+            vetores.Add(new int[2] { 2, 1 });
+            vetores.Add(new int[2] { 2, 3 });
+            vetores.Add(new int[2] { 1, 4 });
+            vetores.Add(new int[2] { 4, 6 });
+            vetores.Add(new int[2] { 3, 5 });
+            vetores.Add(new int[2] { 5, 7 });
+            vetores.Add(new int[2] { 2, 8 });
+            vetores.Add(new int[2] { 8, 10 });
+            vetores.Add(new int[2] { 10, 9 });
+            vetores.Add(new int[2] { 10, 11 });
+            vetores.Add(new int[2] { 9, 12 });
+            vetores.Add(new int[2] { 12, 14 });
+            vetores.Add(new int[2] { 11, 13 });
+            vetores.Add(new int[2] { 13, 15 });
+
+            //Points
             testPoint.Size = 5;
 
-            arrow[0].Direction = new Vector3D(0, 0, 10);
-            arrow[1].Direction = new Vector3D(0, 10, 0);
-            arrow[2].Direction = new Vector3D(10, 0, 0);
+            //Left Hand
+            leftHand.RadiusX = leftHand.RadiusY = leftHand.RadiusZ = 0.1;
 
-            hVp3D.Children.Add(esfera);
+
             hVp3D.Children.Add(testPoint);
-            hVp3D.Children.Add(arrow[0]);
-            hVp3D.Children.Add(arrow[1]);
-            hVp3D.Children.Add(arrow[2]);
+            hVp3D.Children.Add(leftHand);
+            for (int i = 0; i < 3; i++ )
+                hVp3D.Children.Add(arrow[i]);
+
+            for (int i = 0; i < 15; i++ )
+                hVp3D.Children.Add(pipes[i]);
+
+            
+
+            //Camera
+            hVp3D.CameraController.CameraUpDirection = new Vector3D(0, 1, 0);
+            hVp3D.CameraController.CameraPosition = new Point3D(0, 0, 5);
+            hVp3D.CameraController.CameraLookDirection = new Vector3D(0, 0, -1);
+            
         }
 
-        private void setPoints3D()
+    
+        private void update3D()
         {
             testPoint.Points = compSkeleton.points3d;
+
+            leftHand.Center = testPoint.Points[6];
+            hVp3D.CameraController.CameraTarget = testPoint.Points[10];
+            
+            for (int i = 0; i < 15; i++)
+            {
+                pipes[i].Point1 = testPoint.Points[vetores[i][0]];
+                pipes[i].Point2 = testPoint.Points[vetores[i][1]];
+            }
+
+         
+
         }       
 
         #endregion

@@ -13,9 +13,9 @@ namespace helixTestWpf
 
         public static Point3D getRngPoint()
         {
-            double db1 = rng.NextDouble() * 10;
-            double db2 = rng.NextDouble() * 10;
-            double db3 = rng.NextDouble() * 10;
+            double db1 = rng.NextDouble() * 3;
+            double db2 = rng.NextDouble() * 3;
+            double db3 = rng.NextDouble() * 3;
             return new Point3D(db1, db2, db3);
         }
 

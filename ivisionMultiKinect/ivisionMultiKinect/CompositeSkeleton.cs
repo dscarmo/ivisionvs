@@ -32,7 +32,7 @@ namespace ivisionMultiKinect
             {
                 pointName = ske1[i].getJointName();
                 averagePoint = getAveragePoint(ske1[i].getPoint(), ske2[i].getPoint(), ske3[i].getPoint());
-                points3d.Add(amplifyPoint(10, averagePoint));
+                points3d.Add(amplifyPoint(1, averagePoint));
                 pointList.Add(new SkeletonPoint(pointName, averagePoint));
             }
 

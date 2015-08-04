@@ -63,7 +63,7 @@
             <Label Content="Transform Parameters" HorizontalAlignment="Left" Margin="1370,8,0,0" VerticalAlignment="Top"/>
             <Label Content="Translation&#xA;" HorizontalAlignment="Left" Margin="1370,45,0,0" VerticalAlignment="Top"/>
             <Label Content="Rotation&#xA;" HorizontalAlignment="Left" Margin="1370,69,0,0" VerticalAlignment="Top"/>
-            <TextBox x:Name="t11" HorizontalAlignment="Left" Height="23" Margin="1443,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
+            <TextBox x:Name="t11" HorizontalAlignment="Left" Height="23" Margin="1443,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="460"/>
             <TextBox x:Name="t12" HorizontalAlignment="Left" Height="23" Margin="1480,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
             <TextBox x:Name="t13" HorizontalAlignment="Left" Height="23" Margin="1517,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
             <TextBox x:Name="r11" HorizontalAlignment="Left" Height="23" Margin="1443,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
@@ -79,7 +79,7 @@
             <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="77" Margin="1370,34,0,0" VerticalAlignment="Top" Width="197"/>
             <Label Content="Translation&#xA;" HorizontalAlignment="Left" Margin="1370,134,0,0" VerticalAlignment="Top"/>
             <Label Content="Rotation&#xA;" HorizontalAlignment="Left" Margin="1370,158,0,0" VerticalAlignment="Top"/>
-            <TextBox x:Name="t21" HorizontalAlignment="Left" Height="23" Margin="1443,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
+            <TextBox x:Name="t21" HorizontalAlignment="Left" Height="23" Margin="1443,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="-310"/>
             <TextBox x:Name="t22" HorizontalAlignment="Left" Height="23" Margin="1480,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
             <TextBox x:Name="t23" HorizontalAlignment="Left" Height="23" Margin="1517,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>
             <TextBox x:Name="r21" HorizontalAlignment="Left" Height="23" Margin="1443,162,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32" Text="0"/>

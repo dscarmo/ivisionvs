@@ -91,22 +91,22 @@ namespace ivisionMultiKinect
 
         private void setPoints()
         {
-            pointList.Add(new SkeletonPoint("head", jointToPoint3D(skel.Joints[JointType.Head])));
-            pointList.Add(new SkeletonPoint("shoulder left", jointToPoint3D(skel.Joints[JointType.ShoulderLeft])));
-            pointList.Add(new SkeletonPoint("shoulder center", jointToPoint3D(skel.Joints[JointType.ShoulderCenter])));
-            pointList.Add(new SkeletonPoint("shoulder right", jointToPoint3D(skel.Joints[JointType.ShoulderRight])));
-            pointList.Add(new SkeletonPoint("elbow left", jointToPoint3D(skel.Joints[JointType.ElbowLeft])));
-            pointList.Add(new SkeletonPoint("elbow right", jointToPoint3D(skel.Joints[JointType.ElbowRight])));
-            pointList.Add(new SkeletonPoint("hand left", jointToPoint3D(skel.Joints[JointType.HandLeft])));
-            pointList.Add(new SkeletonPoint("hand right", jointToPoint3D(skel.Joints[JointType.HandRight])));
-            pointList.Add(new SkeletonPoint("spine", jointToPoint3D(skel.Joints[JointType.Spine])));
-            pointList.Add(new SkeletonPoint("hip left", jointToPoint3D(skel.Joints[JointType.HipLeft])));
-            pointList.Add(new SkeletonPoint("hip center", jointToPoint3D(skel.Joints[JointType.HipCenter])));
-            pointList.Add(new SkeletonPoint("hip right", jointToPoint3D(skel.Joints[JointType.HipRight])));
-            pointList.Add(new SkeletonPoint("knee left", jointToPoint3D(skel.Joints[JointType.KneeLeft])));
-            pointList.Add(new SkeletonPoint("knee right", jointToPoint3D(skel.Joints[JointType.KneeRight])));
-            pointList.Add(new SkeletonPoint("ankle left", jointToPoint3D(skel.Joints[JointType.AnkleLeft])));
-            pointList.Add(new SkeletonPoint("ankle right", jointToPoint3D(skel.Joints[JointType.AnkleRight])));
+            pointList.Add(new SkeletonPoint("head", jointToPoint3D(skel.Joints[JointType.Head]))); //0
+            pointList.Add(new SkeletonPoint("shoulder left", jointToPoint3D(skel.Joints[JointType.ShoulderLeft]))); //1
+            pointList.Add(new SkeletonPoint("shoulder center", jointToPoint3D(skel.Joints[JointType.ShoulderCenter])));//2
+            pointList.Add(new SkeletonPoint("shoulder right", jointToPoint3D(skel.Joints[JointType.ShoulderRight])));//3
+            pointList.Add(new SkeletonPoint("elbow left", jointToPoint3D(skel.Joints[JointType.ElbowLeft])));//4
+            pointList.Add(new SkeletonPoint("elbow right", jointToPoint3D(skel.Joints[JointType.ElbowRight])));//5
+            pointList.Add(new SkeletonPoint("hand left", jointToPoint3D(skel.Joints[JointType.HandLeft])));//6
+            pointList.Add(new SkeletonPoint("hand right", jointToPoint3D(skel.Joints[JointType.HandRight])));//7
+            pointList.Add(new SkeletonPoint("spine", jointToPoint3D(skel.Joints[JointType.Spine])));//8
+            pointList.Add(new SkeletonPoint("hip left", jointToPoint3D(skel.Joints[JointType.HipLeft])));//9
+            pointList.Add(new SkeletonPoint("hip center", jointToPoint3D(skel.Joints[JointType.HipCenter])));//10
+            pointList.Add(new SkeletonPoint("hip right", jointToPoint3D(skel.Joints[JointType.HipRight])));//11
+            pointList.Add(new SkeletonPoint("knee left", jointToPoint3D(skel.Joints[JointType.KneeLeft])));//12
+            pointList.Add(new SkeletonPoint("knee right", jointToPoint3D(skel.Joints[JointType.KneeRight])));//13
+            pointList.Add(new SkeletonPoint("ankle left", jointToPoint3D(skel.Joints[JointType.AnkleLeft])));//14
+            pointList.Add(new SkeletonPoint("ankle right", jointToPoint3D(skel.Joints[JointType.AnkleRight])));//15
             this.safeGet = true;
         }
 

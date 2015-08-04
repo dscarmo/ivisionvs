@@ -37,7 +37,7 @@ namespace multiKinect
 
         public static bool checkCount(ref int[] frameCount, int id)
         {
-            if (frameCount[id]++ == 10)
+            if (frameCount[id]++ == 1)
             {
                 frameCount[id] = 0;
                 return true;
