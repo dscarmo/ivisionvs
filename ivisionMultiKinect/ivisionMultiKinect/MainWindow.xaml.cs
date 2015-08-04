@@ -24,12 +24,11 @@ namespace multiKinect
     {
         // Collection of connected Kinect Sensors
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
+
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
         const bool useLessKinects = true;
         const int howManyKinects = 3;
-        //Back one month
-        //Yan test
-        //Test personal note
+
 
         #region Color Lists
         /// <summary>
@@ -144,6 +143,7 @@ namespace multiKinect
         RotateTransform3D[] zrotation = new RotateTransform3D[3];
         bool transformON;
         Point3D[] workingPoints = new Point3D[3];
+        
         //Transform Parsing Containers
         double[] r1, r2, r3, t1, t2, t3;
 
@@ -152,7 +152,7 @@ namespace multiKinect
         private ArrowVisual3D[] arrow;
         private PipeVisual3D[] pipes;
         private List<int[]> vetores;
-        private EllipsoidVisual3D leftHand;
+        private EllipsoidVisual3D head3d;
 
         #endregion
 
@@ -566,29 +566,18 @@ namespace multiKinect
                                     case 0:
                                         skeleton0 = new Skeleton2d(usingSkeleton);
                                         Skel0.Text = skeleton0.getStringPoints();
-                                        //Hand0.Text = Coordinates.stringfyPositions(skel.Joints[JointType.HandLeft]);
                                         break;
                                     case 1:
-                                        // TODO TODO TODO 
                                         skeleton1 = new Skeleton2d(usingSkeleton);
                                         Skel1.Text = skeleton1.getStringPoints();
-                                        //hand1 = skel.Joints[JointType.HandLeft];//this will be skeleton2d - OK 
-                                        Skel1to0.Text = transformSkeleton(1);//need a complete transform method in skeleton2d - TODO 
-                                        //Hand1.Text = Coordinates.stringfyPositions(hand1);//need a complete stringfy - OK
+                                        Skel1to0.Text = transformSkeleton(1);
                                         break;
                                     case 2:
                                         skeleton2 = new Skeleton2d(usingSkeleton);
                                         Skel2.Text = skeleton2.getStringPoints();
-                                        //hand2 = skel.Joints[JointType.HandLeft];
                                         Skel2to0.Text = transformSkeleton(2);
-                                        //Hand2.Text = Coordinates.stringfyPositions(hand2);
                                         break;
                                     case 3:
-                                        //No more 4 kinects
-                                        /*hand3 = skel.Joints[JointType.HandLeft];
-                                        
-                                        Hand3to0.Text = transformPoint3(hand3);
-                                        Hand3.Text = Coordinates.stringfyPositions(hand3);*/
                                         break;
 
                                 }
@@ -661,7 +650,6 @@ namespace multiKinect
                 int[] angles = new int[4] { 0, 0, 0, 0 };
                 while (updateAlive)
                 {
-                    //statusUpdate();
                     for (int i = 0; i < sensors.Count; i++)
                     {
                         if (sensors[i].IsRunning)
@@ -817,7 +805,6 @@ namespace multiKinect
         {
             int x = int.Parse(qtd.Text);
             int z = int.Parse(freq.Text);
-            //Thread Capturion = new Thread(new ParameterizedThreadStart(capturing));
             try
             {
                 int[] pass = new int[2];
@@ -831,9 +818,7 @@ namespace multiKinect
                 MessageBox.Show("Insira valores válidos na frequência e quantidade de imagens!");
             }
 
-            //t.Start();
-            //return t;
-            //Capturion.Start(int.Parse(qtd.Text), int.Parse(freq.Text));
+
         }
 
         private void save()
@@ -1021,7 +1006,7 @@ namespace multiKinect
             testPoint = new PointsVisual3D();
             arrow = new ArrowVisual3D[3] { new ArrowVisual3D(), new ArrowVisual3D(), new ArrowVisual3D() };
             pipes = new PipeVisual3D[15];
-            leftHand = new EllipsoidVisual3D();
+            head3d = new EllipsoidVisual3D();
             vetores = new List<int[]>();
             
             //Arrows
@@ -1057,23 +1042,25 @@ namespace multiKinect
             vetores.Add(new int[2] { 12, 14 });
             vetores.Add(new int[2] { 11, 13 });
             vetores.Add(new int[2] { 13, 15 });
+            toggleVisibilityPipes(false);
 
             //Points
             testPoint.Size = 5;
 
             //Left Hand
-            leftHand.RadiusX = leftHand.RadiusY = leftHand.RadiusZ = 0.1;
+            head3d.RadiusX = head3d.RadiusY = head3d.RadiusZ = 0.1;
 
 
             hVp3D.Children.Add(testPoint);
-            hVp3D.Children.Add(leftHand);
+            hVp3D.Children.Add(head3d);
             for (int i = 0; i < 3; i++ )
                 hVp3D.Children.Add(arrow[i]);
 
             for (int i = 0; i < 15; i++ )
                 hVp3D.Children.Add(pipes[i]);
 
-            
+
+           
 
             //Camera
             hVp3D.CameraController.CameraUpDirection = new Vector3D(0, 1, 0);
@@ -1082,12 +1069,18 @@ namespace multiKinect
             
         }
 
+        bool pipeOk = false;
+        private void toggleVisibilityPipes(bool b)
+        {
+            foreach (PipeVisual3D p in pipes)
+                p.Visible = b;            
+        }
     
         private void update3D()
         {
             testPoint.Points = compSkeleton.points3d;
 
-            leftHand.Center = testPoint.Points[6];
+            head3d.Center = testPoint.Points[0];
             hVp3D.CameraController.CameraTarget = testPoint.Points[10];
             
             for (int i = 0; i < 15; i++)
@@ -1096,6 +1089,11 @@ namespace multiKinect
                 pipes[i].Point2 = testPoint.Points[vetores[i][1]];
             }
 
+            if (!pipeOk)
+            {
+                toggleVisibilityPipes(true);
+                pipeOk = true;
+            }
          
 
         }       
