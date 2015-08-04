@@ -1,9 +1,14 @@
 ﻿<Window x:Class="multiKinect.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:h="http://helix-toolkit.org/wpf"
         Title="MultiKinect" Height="900" Width="1600" Loaded="WindowLoaded" Closing="WindowClosing">
     <ScrollViewer  HorizontalScrollBarVisibility="Auto">
         <Grid>
+            <h:HelixViewport3D x:Name="hVp3D" Margin="528,217,728,333" >
+                <h:DefaultLights/>
+
+            </h:HelixViewport3D>
             <Image x:Name="Image0" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,10,0,0">
                 <Image.OpacityMask>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -19,15 +24,12 @@
             <Image x:Name="Ske1" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="965,10,0,0" Opacity="0.5"/>
             <Image x:Name="Ske2" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,459,0,0" Opacity="0.5"/>
             <Image x:Name="Ske3" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="965,459,0,0" Opacity="0.5"/>
-            <TextBox x:Name="Skel0" HorizontalAlignment="Left" Height="273" Margin="410,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="203"/>
-            <TextBox x:Name="Skel2" HorizontalAlignment="Left" Height="223" Margin="415,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="198"/>
-            <TextBox x:Name="Skel1" HorizontalAlignment="Left" Height="276" Margin="810,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="155"/>
-            <TextBox x:Name="Hand3" HorizontalAlignment="Left" Height="255" Margin="810,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150"/>
+            <TextBox x:Name="Skel0" HorizontalAlignment="Left" Height="273" Margin="410,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="113"/>
+            <TextBox x:Name="Skel2" HorizontalAlignment="Left" Height="223" Margin="415,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="108"/>
+            <TextBox x:Name="Skel1" HorizontalAlignment="Left" Height="276" Margin="852,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="113"/>
+            <TextBox x:Name="Hand3" HorizontalAlignment="Left" Height="255" Margin="852,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="108"/>
             <Label Content="Multi Kinect Composite Skeleton Viewer" HorizontalAlignment="Left" Height="47" Margin="448,10,0,0" VerticalAlignment="Top" Width="442" FontSize="24"/>
-            <Label Content="Hand Coordinates " HorizontalAlignment="Left" Height="26" Margin="420,129,0,0" VerticalAlignment="Top" Width="108"/>
-            <Label Content="Hand Coordinates " HorizontalAlignment="Left" Height="26" Margin="852,129,0,0" VerticalAlignment="Top" Width="108"/>
-            <Label Content="Hand Coordinates " HorizontalAlignment="Left" Height="26" Margin="415,578,0,0" VerticalAlignment="Top" Width="108"/>
-            <Label Content="Hand Coordinates " HorizontalAlignment="Left" Height="26" Margin="852,578,0,0" VerticalAlignment="Top" Width="108"/>
+            <Label Content="Coordinates " HorizontalAlignment="Left" Height="26" Margin="420,129,0,0" VerticalAlignment="Top" Width="108"/>
             <Label Content="iVision Lab" HorizontalAlignment="Left" Height="26" Margin="893,0,0,0" VerticalAlignment="Top" Width="67"/>
             <Label Content="Kinect 1" HorizontalAlignment="Left" Margin="420,90,0,0" VerticalAlignment="Top"/>
             <Label Content="Kinect 3" HorizontalAlignment="Left" Margin="420,522,0,0" VerticalAlignment="Top"/>
@@ -97,10 +99,13 @@
             <Label Content="3 to 1" HorizontalAlignment="Left" Margin="1370,179,0,0" VerticalAlignment="Top" FontSize="8"/>
             <Label Content="4 to 1" HorizontalAlignment="Left" Margin="1370,275,0,0" VerticalAlignment="Top" FontSize="8"/>
             <Button x:Name="switchbt" Content="Switch" HorizontalAlignment="Left" Margin="1498,839,0,0" VerticalAlignment="Top" Width="75" Click="switchbt_Click"/>
-            <Button x:Name="stringStream" Content="Show Joints" HorizontalAlignment="Left" Margin="676,410,0,0" VerticalAlignment="Top" Width="75" Click="stringStream_Click"/>
-            <TextBox x:Name="compSke" HorizontalAlignment="Left" Height="277" Margin="634,507,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="158"/>
-            <Label Content="Composite Skeleton" HorizontalAlignment="Left" Height="26" Margin="652,476,0,0" VerticalAlignment="Top" Width="121"/>
+            <Button x:Name="stringStream" Content="Show Joints" HorizontalAlignment="Left" Margin="1487,487,0,0" VerticalAlignment="Top" Width="75" Click="stringStream_Click"/>
+            <TextBox x:Name="compSke" HorizontalAlignment="Left" Height="277" Margin="601,541,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="158"/>
+            <Label Content="Composite Skeleton" HorizontalAlignment="Left" Height="26" Margin="601,186,0,0" VerticalAlignment="Top" Width="121"/>
             <TextBox x:Name="transformstatus" HorizontalAlignment="Left" Height="23" Margin="1487,301,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50" Text="off"/>
+            <Label Content="Coordinates " HorizontalAlignment="Left" Height="26" Margin="852,129,0,0" VerticalAlignment="Top" Width="108"/>
+            <Label Content="Coordinates " HorizontalAlignment="Left" Height="26" Margin="415,573,0,0" VerticalAlignment="Top" Width="108"/>
+            <Label Content="Coordinates " HorizontalAlignment="Left" Height="26" Margin="810,578,0,0" VerticalAlignment="Top" Width="108"/>
 
         </Grid>
     </ScrollViewer>

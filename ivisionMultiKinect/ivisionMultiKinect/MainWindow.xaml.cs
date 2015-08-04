@@ -15,6 +15,8 @@ namespace multiKinect
     using Microsoft.Kinect;
     using System.Windows.Media.Media3D;
     using ivisionMultiKinect;
+    using HelixToolkit;
+    using HelixToolkit.Wpf;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -146,6 +148,10 @@ namespace multiKinect
         //Transform Parsing Containers
         double[] r1, r2, r3, t1, t2, t3;
 
+        //3D Skeleton
+        private EllipsoidVisual3D esfera;
+        private PointsVisual3D testPoint;
+        private ArrowVisual3D[] arrow;
 
 
         #endregion
@@ -171,7 +177,8 @@ namespace multiKinect
             skeleton1 = new Skeleton2d();
             skeleton2 = new Skeleton2d();
             skeleton3 = new Skeleton2d();
-            //t_angleUpdate = new Thread(update);
+            initialize3D();
+
             r1 = new double[3] { 0.0, 0.0, 0.0 };
             r2 = new double[3] { 0.0, 0.0, 0.0 };
             r3 = new double[3] { 0.0, 0.0, 0.0 };
@@ -584,6 +591,7 @@ namespace multiKinect
                                 {
                                     Utils.debugMsg("here, we, go.");
                                     compSke.Text = compSkeleton.calculateCompositeSkeleton(skeleton0.getPointList(), skeleton1.getTransformedList(), skeleton2.getTransformedList());
+                                    setPoints3D();
                                 }
                                 else
                                     compSke.Text = "Not safe to compose Skeleton";
@@ -905,21 +913,6 @@ namespace multiKinect
                 i++;
             }
 
-            /*
-            i = 0;
-            string dataset = "C:\\Users\\Public\\Kinect_Dataset\\Datatest";
-            string filename = "";
-            var FileNamePath = Path.Combine(dataset, filename);
-            Paint brilho = new Paint();
-            int t = brilho.Brightness(dataset,x);
-            if (t != -1)
-            {
-                MessageBox.Show("Brilho alterado em "+t.ToString()+" imagens.");
-            }
-            else
-            {
-                MessageBox.Show("Erro na alteração do brilho. "+t.ToString()+" imagens alteradas.");
-            }*/
         }
         #endregion
 
@@ -979,9 +972,9 @@ namespace multiKinect
                             rx = Utils.radToDegree(Double.Parse(r11.Text));
                             ry = Utils.radToDegree(Double.Parse(r12.Text));
                             rz = Utils.radToDegree(Double.Parse(r13.Text));
-                            tx = Utils.radToDegree(Double.Parse(t11.Text));
-                            ty = Utils.radToDegree(Double.Parse(t12.Text));
-                            tz = Utils.radToDegree(Double.Parse(t13.Text));
+                            tx = Double.Parse(t11.Text) / 1000;
+                            ty = Double.Parse(t12.Text) / 1000;
+                            tz = Double.Parse(t13.Text) / 1000;
                         }
                         catch (Exception e)
                         {
@@ -996,9 +989,9 @@ namespace multiKinect
                             rx = Utils.radToDegree(Double.Parse(r21.Text));
                             ry = Utils.radToDegree(Double.Parse(r22.Text));
                             rz = Utils.radToDegree(Double.Parse(r23.Text));
-                            tx = Utils.radToDegree(Double.Parse(t21.Text));
-                            ty = Utils.radToDegree(Double.Parse(t22.Text));
-                            tz = Utils.radToDegree(Double.Parse(t23.Text));
+                            tx = Double.Parse(t21.Text)/1000;
+                            ty = Double.Parse(t22.Text)/1000;
+                            tz = Double.Parse(t23.Text)/1000;
                         }
                         catch (Exception e)
                         {
@@ -1136,7 +1129,35 @@ namespace multiKinect
 
         #endregion
 
-        
+        #region CompositeSkeleton
+       
+
+        private void initialize3D()
+        {
+            esfera = new EllipsoidVisual3D();
+            testPoint = new PointsVisual3D();
+            arrow = new ArrowVisual3D[3] { new ArrowVisual3D(), new ArrowVisual3D(), new ArrowVisual3D() };
+
+            testPoint.Size = 5;
+
+            arrow[0].Direction = new Vector3D(0, 0, 10);
+            arrow[1].Direction = new Vector3D(0, 10, 0);
+            arrow[2].Direction = new Vector3D(10, 0, 0);
+
+            hVp3D.Children.Add(esfera);
+            hVp3D.Children.Add(testPoint);
+            hVp3D.Children.Add(arrow[0]);
+            hVp3D.Children.Add(arrow[1]);
+            hVp3D.Children.Add(arrow[2]);
+        }
+
+        private void setPoints3D()
+        {
+            testPoint.Points = compSkeleton.points3d;
+        }       
+
+        #endregion
+
 
     }
 }

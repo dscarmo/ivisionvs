@@ -8,7 +8,7 @@
     <Grid HorizontalAlignment="Left" Height="289" Margin="10,0,0,0" VerticalAlignment="Top" Width="614">
         <h:HelixViewport3D x:Name="hVp3D" Margin="0,0,2,0" >
             <h:DefaultLights/>
-
+            
         </h:HelixViewport3D>
         <Button x:Name="fly" Content="Fly" HorizontalAlignment="Left" Height="100" Margin="142,339,0,-150" VerticalAlignment="Top" Width="124" Click="fly_Click_1"/>
     </Grid>
