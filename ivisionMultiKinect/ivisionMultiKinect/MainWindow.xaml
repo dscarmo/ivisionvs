@@ -9,14 +9,7 @@
                 <h:DefaultLights/>
 
             </h:HelixViewport3D>
-            <Image x:Name="Image0" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,10,0,0">
-                <Image.OpacityMask>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="Black" Offset="0"/>
-                        <GradientStop Color="#FFD81E1E" Offset="1"/>
-                    </LinearGradientBrush>
-                </Image.OpacityMask>
-            </Image>
+            <Image x:Name="Image0" HorizontalAlignment="Left" Height="400" VerticalAlignment="Top" Width="400" Margin="10,10,0,0"/>         
             <Image x:Name="Image1" HorizontalAlignment="Left" Height="400" Margin="965,10,0,0" VerticalAlignment="Top" Width="400"/>
             <Image x:Name="Image2" HorizontalAlignment="Left" Height="400" Margin="10,459,0,0" VerticalAlignment="Top" Width="400"/>
             <Image x:Name="Image3" HorizontalAlignment="Left" Height="400" Margin="965,459,0,0" VerticalAlignment="Top" Width="400"/>
