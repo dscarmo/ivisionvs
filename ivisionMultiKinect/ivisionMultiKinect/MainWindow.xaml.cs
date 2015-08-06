@@ -26,7 +26,7 @@ namespace multiKinect
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
 
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
-        const bool useLessKinects = false;
+        const bool useLessKinects = true;
         const int howManyKinects = 3;
 
 
