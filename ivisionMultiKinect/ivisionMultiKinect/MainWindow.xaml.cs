@@ -26,7 +26,7 @@ namespace multiKinect
         KinectSensorCollection sensors = KinectSensor.KinectSensors;
 
         //Defines how many Kinects you want to work with. Set to false to use all kinects connected.
-        const bool useLessKinects = true;
+        const bool useLessKinects = false;
         const int howManyKinects = 3;
 
 
@@ -259,18 +259,7 @@ namespace multiKinect
                                 Ske2.Source = this.skeImageSource[2];
                                 //Depth
                                 this.sensors[2].DepthFrameReady += this.SensorDepthFrameReady2;
-                                break;
-                            case 3:
-                                //rgb
-                                this.Image3.Source = this.colorBitmap[3];
-                                this.sensors[3].ColorFrameReady += this.SensorColorFrameReady3;
-                                //ske
-                                this.sensors[3].SkeletonFrameReady += this.SensorSkeletonFrameReady3;
-                                this.skeImageSource.Add(new DrawingImage(this.drawingGroup[3]));
-                                Ske3.Source = this.skeImageSource[3];
-                                //Depth
-                                this.sensors[3].DepthFrameReady += this.SensorDepthFrameReady3;
-                                break;
+                                break;     
                             default:
                                 Utils.msg("wrong number in kID");
                                 break;
@@ -323,9 +312,6 @@ namespace multiKinect
                     case 2:
                         this.Image2.Source = this.depthBitmap[2];
                         break;
-                    case 3:
-                        this.Image3.Source = this.depthBitmap[3];
-                        break;
                     default:
                         break;
                 }
@@ -339,8 +325,6 @@ namespace multiKinect
                     case 1: this.Image1.Source = this.colorBitmap[1];
                         break;
                     case 2: this.Image2.Source = this.colorBitmap[2];
-                        break;
-                    case 3: this.Image3.Source = this.colorBitmap[3];
                         break;
                     default: 
                         break;
@@ -366,7 +350,7 @@ namespace multiKinect
             else if (streamChoosing == 2) //DEPTH
             {
                 streamChoosing = 0;
-                Utils.msg("turning stream off, click switch again to turn on");     
+                Utils.debugMsg("turning stream off, click switch again to turn on");     
             }
             else {
                 Utils.debugMsg("switching to ir");
@@ -986,13 +970,8 @@ namespace multiKinect
 
         private void transformToggle(object sender, RoutedEventArgs e)
         {
-            if (transformON)
-                transformON = false;
-            else
-                transformON = true;
-            transformstatus.Text = transformON ? "on" : "off";
-
-
+            transformON = !transformON;
+            transformbtn.Content = transformON ? "Transform: ON" : "Transform OFF";
         }
 
         #endregion
