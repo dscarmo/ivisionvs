@@ -37,7 +37,7 @@ namespace multiKinect
 
         public static bool checkCount(ref int[] frameCount, int id)
         {
-            if (frameCount[id]++ == 10)
+            if (frameCount[id]++ == 7)
             {
                 frameCount[id] = 0;
                 return true;
@@ -51,6 +51,24 @@ namespace multiKinect
         public static double radToDegree(double rad)
         {
             return rad * 180 / Math.PI;
+        }
+
+        private static double[] generateSinCos(double i)
+        {
+            double[] result = new double[2] { 0.0, 0.0 };
+            result[0] = 5*Math.Sin(i);
+            result[1] = 5 * Math.Cos(i) + 2;
+            return result;
+        }
+
+        public static List<double[]> generateCircle()
+        {
+            List<double[]> circulo = new List<double[]>();
+
+            for (double i = 0; i <= 6.28; i = i + 0.02)
+                circulo.Add(generateSinCos(i));
+      
+            return circulo;
         }
     }
 }

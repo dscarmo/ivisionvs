@@ -39,12 +39,11 @@ namespace ivisionMultiKinect
             return this.getStringPoints();
         }
 
-
         public Point3D getAveragePoint(Point3D p1, Point3D p2, Point3D p3)
         {           
-            double x = (2*p1.X + p2.X + p3.X)/5;
-            double y = (2*p1.Y + p2.Y + p3.Y)/5;
-            double z = (2*p1.Z + p2.Z + p3.Z)/5;
+            double x = (2*p1.X + p2.X + p3.X)/4;
+            double y = (2*p1.Y + p2.Y + p3.Y)/4;
+            double z = (2*p1.Z + p2.Z + p3.Z)/4;
             return new Point3D(x, y, z);
         }
 
@@ -67,8 +66,5 @@ namespace ivisionMultiKinect
             else
                 return "String stream disabled.";
         }
-
-
-        
     }
 }

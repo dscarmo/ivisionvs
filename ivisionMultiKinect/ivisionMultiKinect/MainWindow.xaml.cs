@@ -9,6 +9,7 @@ namespace multiKinect
     using System.Globalization;
     using System.IO;
     using System.Windows;
+    using System.Windows.Input;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using System.Threading;
@@ -153,6 +154,9 @@ namespace multiKinect
         private PipeVisual3D[] pipes;
         private List<int[]> vetores;
         private EllipsoidVisual3D head3d;
+        private GridLinesVisual3D grid;
+        private List<double[]> circulo;
+        private Point3D camPos;
 
         #endregion
 
@@ -512,7 +516,7 @@ namespace multiKinect
         private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e, int index)
         {
             Skeleton[] skeletons = new Skeleton[0];
-            
+            String transformText;
             Skeleton usingSkeleton = new Skeleton();
 
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
@@ -554,12 +558,16 @@ namespace multiKinect
                                     case 1:
                                         skeleton1 = new Skeleton2d(usingSkeleton);
                                         Skel1.Text = skeleton1.getStringPoints();
-                                        Skel1to0.Text = transformSkeleton(1);
+                                        transformText = transformSkeleton(1);
+                                        if (Skeleton2d.stringEnable) Skel1to0.Text = transformText;
+                                        else Skel1to0.Text = "Strings disabled";
                                         break;
                                     case 2:
                                         skeleton2 = new Skeleton2d(usingSkeleton);
                                         Skel2.Text = skeleton2.getStringPoints();
-                                        Skel2to0.Text = transformSkeleton(2);
+                                        transformText = transformSkeleton(2);
+                                        if (Skeleton2d.stringEnable) Skel2to0.Text = transformText;
+                                        else Skel2to0.Text = "Strings disabled";
                                         break;
                                     case 3:
                                         break;
@@ -987,16 +995,20 @@ namespace multiKinect
             pipes = new PipeVisual3D[15];
             head3d = new EllipsoidVisual3D();
             vetores = new List<int[]>();
-            
+            circulo = new List<double[]>();
+            camPos = new Point3D(0, 0, 5);
+
             //Arrows
-            arrow[0].Direction = new Vector3D(0, 0, 1);
-            arrow[1].Direction = new Vector3D(0, 1, 0);
+            arrow[0].Direction = new Vector3D(0, 1, 0);
+            arrow[0].Diameter = 0.1;
+            arrow[0].HeadLength = 0.5;
+            /*arrow[1].Direction = new Vector3D(0, 1, 0);
             arrow[2].Direction = new Vector3D(1, 0, 0);
             foreach (ArrowVisual3D a in arrow)
             {
                 a.Diameter = 0.1;
                 a.HeadLength = 0.5;
-            }
+            }*/
 
             //Pipes
             int pipeCount = 0;
@@ -1006,6 +1018,7 @@ namespace multiKinect
                 pipes[pipeCount].Diameter = 0.05;
                 pipeCount++;
             }
+
             vetores.Add(new int[2] { 0, 2 });
             vetores.Add(new int[2] { 2, 1 });
             vetores.Add(new int[2] { 2, 3 });
@@ -1026,24 +1039,33 @@ namespace multiKinect
             //Points
             testPoint.Size = 5;
 
-            //Left Hand
+            //WireFrame
+            grid = new GridLinesVisual3D();
+            grid.Normal = new Vector3D(0, 1, 0);
+
+            
+            hVp3D.Children.Add(grid);
+            //
+
+            //Head
             head3d.RadiusX = head3d.RadiusY = head3d.RadiusZ = 0.1;
 
 
             hVp3D.Children.Add(testPoint);
             hVp3D.Children.Add(head3d);
-            for (int i = 0; i < 3; i++ )
-                hVp3D.Children.Add(arrow[i]);
+            /*for (int i = 0; i < 3; i++ )
+                hVp3D.Children.Add(arrow[i]);*/
+            hVp3D.Children.Add(arrow[0]);
 
             for (int i = 0; i < 15; i++ )
                 hVp3D.Children.Add(pipes[i]);
 
-
-           
+            circulo = Utils.generateCircle();
+            
 
             //Camera
             hVp3D.CameraController.CameraUpDirection = new Vector3D(0, 1, 0);
-            hVp3D.CameraController.CameraPosition = new Point3D(0, 0, 5);
+            hVp3D.CameraController.CameraPosition = camPos;
             hVp3D.CameraController.CameraLookDirection = new Vector3D(0, 0, -1);
             
         }
@@ -1071,13 +1093,41 @@ namespace multiKinect
             if (!pipeOk)
             {
                 toggleVisibilityPipes(true);
+                grid.Center = testPoint.Points[15];
                 pipeOk = true;
-            }
-         
+            }           
+        }
 
-        }       
+        int circPos = 0;
+
+        private void giraGira(bool vai)
+        {
+            if (vai) 
+                circPos++;
+            else 
+                circPos--;
+            if (circPos == 310) circPos = 0;
+            if (circPos == -1) circPos = 310;
+            camPos.X = circulo[circPos][0];
+            camPos.Z = circulo[circPos][1]; 
+            hVp3D.CameraController.CameraPosition = camPos;
+            hVp3D.CameraController.CameraTarget = testPoint.Points[10];
+        }
+
+        private void setaGira(object sender, KeyEventArgs e)
+        {
+            Console.Write("Pressed key");
+            if (e.Key == Key.Right || e.Key == Key.NumPad6)
+                giraGira(true);
+            else if (e.Key == Key.NumPad4)
+                giraGira(false);
+        }
+
 
         #endregion
+
+        
+      
 
 
     }

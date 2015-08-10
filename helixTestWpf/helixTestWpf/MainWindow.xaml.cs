@@ -32,6 +32,7 @@ namespace helixTestWpf
         private List<Point3D> pointList;
         private ArrowVisual3D[] arrow;
         private PipeVisual3D[] pipes;
+        private GridLinesVisual3D grid;
         
         public MainWindow()
         {
@@ -78,6 +79,14 @@ namespace helixTestWpf
 
             pipes[0].Point1 = pointList[0];
             pipes[0].Point2 = pointList[1];
+           
+            
+            //WireFrame
+            grid = new GridLinesVisual3D();
+            grid.Center = new Point3D(0, 0,-3);
+            hVp3D.Children.Add(grid);
+            //
+
 
             hVp3D.Children.Add(testPoint);
 
