@@ -1018,7 +1018,7 @@ namespace multiKinect
                 pipes[pipeCount].Diameter = 0.05;
                 pipeCount++;
             }
-
+           
             vetores.Add(new int[2] { 0, 2 });
             vetores.Add(new int[2] { 2, 1 });
             vetores.Add(new int[2] { 2, 3 });

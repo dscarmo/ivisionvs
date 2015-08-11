@@ -156,7 +156,7 @@
         </Grid>
         <Label Content="2 to 1" Grid.Column="1" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25"/>
         <Label Content="3 to 1" Grid.Column="3" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25"/>
-        <TextBox x:Name="Skel1to0" TextWrapping="Wrap" Grid.Column="0" Grid.Row="7" IsReadOnly="True"/>
+        <TextBox x:Name="Skel1to0"  Grid.Column="0" Grid.Row="7" IsReadOnly="True"/>
         <TextBox x:Name="Skel2to0" TextWrapping="Wrap" Grid.Column="4" Grid.Row="7"/>
     </Grid>
 </Window>

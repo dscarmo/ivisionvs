@@ -19,13 +19,20 @@ namespace ivisionMultiKinect
             this.point = point;
         }
 
-        
+
 
         public String getFormatedString()
         {
             Point3D p = this.getPoint();
-            return this.getJointName() + ": x: " + p.X.ToString("F2") + " | y: " + p.Y.ToString("F2") + " | z: " + p.Z.ToString("F2") + " - ";
-            
+            return this.getJointName() + System.Environment.NewLine + "   x: " + p.X.ToString("F2") + "  |  y: " + p.Y.ToString("F2") + "  |  z: " + p.Z.ToString("F2") + System.Environment.NewLine;
+
+        }
+
+        public String getFormatedStringTransform()
+        {
+            Point3D p = this.getPoint();
+            return this.getJointName() + System.Environment.NewLine + "   x: " + p.X.ToString("F2") + "  |  y: " + p.Y.ToString("F2") + "  |  z: " + p.Z.ToString("F2") + System.Environment.NewLine;
+
         }
 
         public Point3D getPoint(){
