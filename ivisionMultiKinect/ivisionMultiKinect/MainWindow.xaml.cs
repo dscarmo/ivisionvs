@@ -158,6 +158,9 @@ namespace multiKinect
         private List<double[]> circulo;
         private Point3D camPos;
 
+        //Speed
+        private SpeedCalculator speedcalculator;
+
         #endregion
 
         #region Initialization and Closure
@@ -182,6 +185,7 @@ namespace multiKinect
             skeleton2 = new Skeleton2d();
             skeleton3 = new Skeleton2d();
             initialize3D();
+            speedcalculator = new SpeedCalculator();
 
             r1 = new double[3] { 0.0, 0.0, 0.0 };
             r2 = new double[3] { 0.0, 0.0, 0.0 };
@@ -570,17 +574,20 @@ namespace multiKinect
                                         else Skel2to0.Text = "Strings disabled";
                                         break;
                                     case 3:
+                                        //Deprecated
                                         break;
 
                                 }
-
-                                if (skeleton0.safeToGetSkeleton() & skeleton1.safeToGetTransform() & skeleton2.safeToGetTransform())
-                                {
-                                    compSke.Text = compSkeleton.calculateCompositeSkeleton(skeleton0.getPointList(), skeleton1.getTransformedList(), skeleton2.getTransformedList());
-                                    update3D();
-                                }
-                                else
-                                    compSke.Text = "Not safe to compose Skeleton";
+                                if (Utils.checkCount(ref frameCount, 3))
+                                    if (skeleton0.safeToGetSkeleton() & skeleton1.safeToGetTransform() & skeleton2.safeToGetTransform())
+                                    {
+                                        compSke.Text = compSkeleton.calculateCompositeSkeleton(skeleton0.getPointList(), skeleton1.getTransformedList(), skeleton2.getTransformedList());
+                                        update3D();
+                                        timeShow.Content = speedcalculator.getTime().ToString();
+                                        speedShow.Content = speedcalculator.calcSpeed(compSkeleton.points3d[6]).ToString();
+                                    }
+                                    else
+                                        compSke.Text = "Not safe to compose Skeleton";
                                 
 
                             }

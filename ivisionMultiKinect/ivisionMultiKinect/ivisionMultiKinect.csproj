@@ -65,6 +65,7 @@
     <Compile Include="DepthColorizer.cs" />
     <Compile Include="Skeleton2d.cs" />
     <Compile Include="SkeletonPoint.cs" />
+    <Compile Include="SpeedCalculator.cs" />
     <Compile Include="Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
