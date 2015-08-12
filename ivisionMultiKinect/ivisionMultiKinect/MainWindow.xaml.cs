@@ -1062,7 +1062,7 @@ namespace multiKinect
             hVp3D.Children.Add(head3d);
             /*for (int i = 0; i < 3; i++ )
                 hVp3D.Children.Add(arrow[i]);*/
-            hVp3D.Children.Add(arrow[0]);
+            //hVp3D.Children.Add(arrow[0]);
 
             for (int i = 0; i < 15; i++ )
                 hVp3D.Children.Add(pipes[i]);
